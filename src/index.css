@@ -1,7 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #F8FAFC;
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply text-gray-900 bg-white;
+  }
+}
+
+@layer utilities {
+  .nav-pill-active {
+    @apply bg-marcona-blue text-white rounded-full px-5 py-2 font-semibold;
+  }
+  .nav-pill {
+    @apply text-gray-700 hover:text-marcona-blue px-5 py-2 font-medium transition-colors duration-200;
+  }
+  .card-service {
+    @apply bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center text-center
+           hover:-translate-y-2 hover:shadow-xl transition-all duration-300 cursor-pointer;
+  }
+  .btn-primary {
+    @apply bg-marcona-blue text-white font-semibold px-5 py-2.5 rounded-lg
+           hover:bg-blue-800 transition-colors duration-200 flex items-center gap-2;
+  }
+  .btn-gold {
+    @apply bg-marcona-gold text-gray-900 font-semibold px-5 py-2.5 rounded-lg
+           hover:bg-yellow-500 transition-colors duration-200;
+  }
 }
