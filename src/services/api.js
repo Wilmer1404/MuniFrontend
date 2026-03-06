@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// instancia central de axios apuntando al backend
 const api = axios.create({
   baseURL: 'http://localhost:8080/api',
   headers: {
@@ -7,7 +8,7 @@ const api = axios.create({
   },
 });
 
-// interceptor: inyecta el token JWT si existe
+// interceptor de request: inyecta el JWT en cada llamada
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -19,14 +20,19 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// interceptor: manejo global de errores 401
+// interceptor de response: maneja sesión inválida/expirada
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    // 401 = token expirado o inválido | 403 = sin permiso para ese recurso
+    if (status === 401 || status === 403) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      // solo redirigir si no estamos ya en /login para evitar loop
+      if (!window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

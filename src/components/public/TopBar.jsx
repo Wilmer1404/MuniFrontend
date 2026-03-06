@@ -29,10 +29,14 @@ export default function TopBar() {
 
           {/* Logo + Nombre */}
           <div className="flex items-center gap-4">
-            {/* Escudo placeholder */}
-            <div className="w-14 h-14 bg-marcona-blue rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
-              <span className="text-white text-2xl font-black leading-none">M</span>
-            </div>
+            
+            {/* Logo SVG Oficial */}
+            <img 
+              src="/marconalogo.svg" 
+              alt="Logo Municipalidad Distrital de Marcona" 
+              className="h-14 w-auto object-contain flex-shrink-0 drop-shadow-sm"
+            />
+            
             <div>
               <p className="text-[10px] font-semibold text-marcona-blue uppercase tracking-widest leading-tight">
                 Municipalidad Distrital de
@@ -80,7 +84,7 @@ export default function TopBar() {
             {/* Botón Mesa de Partes */}
             <a
               href="#mesa-partes"
-              className="btn-primary text-sm"
+              className="btn-primary text-sm flex items-center gap-2 bg-marcona-blue hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
             >
               <FileText size={16} strokeWidth={1.5} />
               Mesa de Partes Virtual

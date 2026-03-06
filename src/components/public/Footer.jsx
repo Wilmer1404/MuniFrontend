@@ -19,10 +19,10 @@ const SERVICE_LINKS = [
 ];
 
 const SOCIALS = [
-  { icon: Facebook, href: '#', label: 'Facebook' },
-  { icon: Instagram, href: '#', label: 'Instagram' },
-  { icon: Twitter, href: '#', label: 'Twitter / X' },
-  { icon: Youtube, href: '#', label: 'YouTube' },
+  { icon: Facebook, href: 'https://www.facebook.com/profile.php?id=100089214487791', label: 'Facebook' },
+  { icon: Instagram, href: 'https://www.instagram.com/munimarcona/', label: 'Instagram' },
+  { icon: Twitter, href: 'https://twitter.com/munimarcona', label: 'Twitter / X' },
+  { icon: Youtube, href: 'https://www.youtube.com/channel/UCdRwoaSjeZHiuuD4FonCIxQ', label: 'YouTube' },
 ];
 
 export default function Footer() {
@@ -34,8 +34,13 @@ export default function Footer() {
           {/* Columna 1: Institución */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                <span className="text-marcona-blue font-black text-lg">M</span>
+              {/* Logo SVG Oficial */}
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center p-1.5 flex-shrink-0 shadow-md">
+                <img 
+                  src="/marconalogo.svg" 
+                  alt="Logo Municipalidad Distrital de Marcona" 
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <p className="font-black text-sm leading-tight uppercase">Municipalidad Distrital</p>
@@ -48,6 +53,7 @@ export default function Footer() {
 
             {/* Redes sociales */}
             <div className="flex items-center gap-3 mt-5">
+              {/* eslint-disable-next-line no-unused-vars */}
               {SOCIALS.map(({ icon: Icon, href, label }) => (
                 <a
                   key={label}
@@ -130,22 +136,7 @@ export default function Footer() {
             {/* Escudo Nacional del Perú (SVG simplificado) */}
             <div className="mt-5 flex items-center gap-3">
               <div className="w-12 h-14 flex items-start justify-center">
-                <svg viewBox="0 0 60 72" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Escudo tricolor simplificado */}
-                  <path d="M30 4 L56 18 L56 54 C56 54 30 68 30 68 C30 68 4 54 4 54 L4 18 Z" fill="#D91023" />
-                  <path d="M30 4 L56 18 L56 54 C56 54 43 61 30 68 L30 4 Z" fill="white" />
-                  <path d="M4 18 L30 4 L30 68 C17 61 4 54 4 54 Z" fill="#D91023" />
-                  {/* División central blanca */}
-                  <path d="M20 18 L40 18 L40 54 L20 54 Z" fill="white" />
-                  {/* Árbol (simplificado) */}
-                  <path d="M30 28 L27 36 L33 36 Z" fill="#00703C" />
-                  <rect x="29" y="36" width="2" height="6" fill="#5C3310" />
-                  {/* Vicuña */}
-                  <ellipse cx="23" cy="36" rx="4" ry="3" fill="#C8A870" />
-                  <line x1="23" y1="33" x2="23" y2="29" stroke="#C8A870" strokeWidth="1.5" />
-                  {/* Cornucopia */}
-                  <path d="M37 33 Q41 36 39 40 L35 38 Q36 34 37 33Z" fill="#FFD700" />
-                </svg>
+                <img src='/public/Escudo_nacional_del_Perú.svg' alt="Escudo Nacional del Perú" className="w-full h-full object-contain" />
               </div>
               <p className="text-white/50 text-[10px] leading-tight">
                 República del Perú<br />
