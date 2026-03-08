@@ -136,7 +136,7 @@ export default function Footer() {
             {/* Escudo Nacional del Perú (SVG simplificado) */}
             <div className="mt-5 flex items-center gap-3">
               <div className="w-12 h-14 flex items-start justify-center">
-                <img src='/public/Escudo_nacional_del_Perú.svg' alt="Escudo Nacional del Perú" className="w-full h-full object-contain" />
+                <img src='/Escudo_nacional_del_Perú.svg' alt="Escudo Nacional del Perú" className="w-full h-full object-contain" />
               </div>
               <p className="text-white/50 text-[10px] leading-tight">
                 República del Perú<br />

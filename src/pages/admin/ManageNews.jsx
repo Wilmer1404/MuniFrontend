@@ -1,32 +1,45 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Plus, Pencil, Trash2, Search, X, Loader2, AlertCircle } from 'lucide-react';
-import toast from 'react-hot-toast';
-import api from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Search,
+  X,
+  Loader2,
+  AlertCircle,
+  FileText,
+  Upload,
+  ExternalLink,
+} from "lucide-react";
+import toast from "react-hot-toast";
+import api from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 
 const CATEGORY_COLORS = {
-  Obras: 'bg-blue-100 text-blue-700',
-  Salud: 'bg-emerald-100 text-emerald-700',
-  Comunicado: 'bg-purple-100 text-purple-700',
-  Normativa: 'bg-orange-100 text-orange-700',
-  Cultura: 'bg-pink-100 text-pink-700',
-  Educación: 'bg-indigo-100 text-indigo-700',
+  Obras: "bg-blue-100 text-blue-700",
+  Salud: "bg-emerald-100 text-emerald-700",
+  Comunicado: "bg-purple-100 text-purple-700",
+  Normativa: "bg-orange-100 text-orange-700",
+  Cultura: "bg-pink-100 text-pink-700",
+  Educación: "bg-indigo-100 text-indigo-700",
 };
 
 const FORM_INITIAL = {
-  titulo: '',
-  contenido: '',
-  urlImagen: '',
-  categoria: '',
+  titulo: "",
+  contenido: "",
+  urlImagen: "",
+  categoria: "",
   destacada: false,
 };
 
 // formatea fecha ISO a formato legible
 function formatDate(iso) {
-  if (!iso) return '—';
+  if (!iso) return "—";
   try {
-    return new Date(iso).toLocaleDateString('es-PE', {
-      day: '2-digit', month: 'short', year: 'numeric',
+    return new Date(iso).toLocaleDateString("es-PE", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   } catch {
     return iso;
@@ -38,7 +51,7 @@ export default function ManageNews() {
   const [noticias, setNoticias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   // estado del modal
   const [modalOpen, setModalOpen] = useState(false);
@@ -46,17 +59,22 @@ export default function ManageNews() {
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
+  // pdf upload state
+  const [pdfFile, setPdfFile] = useState(null); // archivo pdf seleccionado
+  const [pdfPreviewName, setPdfPreviewName] = useState(""); // nombre para mostrar
+  const [existingPdfUrl, setExistingPdfUrl] = useState(""); // url del pdf ya guardado
+  const pdfInputRef = useRef(null);
+
   // carga la lista de noticias desde el backend
   const fetchNoticias = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.get('/noticias', { params: { size: 50 } });
-      // el backend devuelve Page<NoticiaResponse>; extraemos el contenido
+      const res = await api.get("/noticias", { params: { size: 50 } });
       const data = res.data?.content ?? res.data;
       setNoticias(Array.isArray(data) ? data : []);
     } catch (err) {
-      const msg = err.response?.data?.message || 'Error al cargar noticias.';
+      const msg = err.response?.data?.message || "Error al cargar noticias.";
       setError(msg);
       toast.error(msg);
     } finally {
@@ -71,13 +89,16 @@ export default function ManageNews() {
   const filtered = noticias.filter(
     (n) =>
       n.titulo?.toLowerCase().includes(search.toLowerCase()) ||
-      n.categoria?.toLowerCase().includes(search.toLowerCase())
+      n.categoria?.toLowerCase().includes(search.toLowerCase()),
   );
 
   // abre el modal para crear
   function openCreateModal() {
     setEditingId(null);
     setFormData({ ...FORM_INITIAL, autorId: user?.id });
+    setPdfFile(null);
+    setPdfPreviewName("");
+    setExistingPdfUrl("");
     setModalOpen(true);
   }
 
@@ -87,11 +108,14 @@ export default function ManageNews() {
     setFormData({
       titulo: noticia.titulo,
       contenido: noticia.contenido,
-      urlImagen: noticia.urlImagen || '',
+      urlImagen: noticia.urlImagen || "",
       categoria: noticia.categoria,
       destacada: noticia.destacada,
       autorId: user?.id,
     });
+    setPdfFile(null);
+    setPdfPreviewName("");
+    setExistingPdfUrl(noticia.urlPdf || "");
     setModalOpen(true);
   }
 
@@ -99,29 +123,67 @@ export default function ManageNews() {
     setModalOpen(false);
     setFormData(FORM_INITIAL);
     setEditingId(null);
+    setPdfFile(null);
+    setPdfPreviewName("");
+    setExistingPdfUrl("");
   }
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   }
 
-  // crea o edita una noticia
+  function handlePdfChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      toast.error("Solo se aceptan archivos PDF.");
+      return;
+    }
+    setPdfFile(file);
+    setPdfPreviewName(file.name);
+  }
+
+  function clearPdf() {
+    setPdfFile(null);
+    setPdfPreviewName("");
+    if (pdfInputRef.current) pdfInputRef.current.value = "";
+  }
+
+  // crea o edita una noticia, luego sube el pdf si hay uno seleccionado
   async function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
     try {
+      let savedId = editingId;
+
       if (editingId) {
         await api.put(`/noticias/${editingId}`, formData);
-        toast.success('¡Noticia actualizada con éxito!');
+        toast.success("¡Noticia actualizada con éxito!");
       } else {
-        await api.post('/noticias', formData);
-        toast.success('¡Noticia publicada con éxito!');
+        const res = await api.post("/noticias", formData);
+        savedId = res.data.id;
+        toast.success("¡Noticia publicada con éxito!");
       }
+
+      // subir el pdf si el admin seleccionó uno
+      if (pdfFile && savedId) {
+        const fd = new FormData();
+        fd.append("file", pdfFile);
+        await api.post(`/noticias/${savedId}/upload-pdf`, fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("PDF adjunto subido correctamente.");
+      }
+
       closeModal();
       fetchNoticias();
     } catch (err) {
-      const msg = err.response?.data?.message || 'No se pudo guardar la noticia.';
+      const msg =
+        err.response?.data?.message || "No se pudo guardar la noticia.";
       toast.error(msg);
     } finally {
       setSubmitting(false);
@@ -130,25 +192,42 @@ export default function ManageNews() {
 
   // elimina una noticia
   async function handleDelete(id, titulo) {
-    if (!window.confirm(`¿Eliminar la noticia "${titulo}"? Esta acción no se puede deshacer.`)) return;
+    if (
+      !globalThis.confirm(
+        `¿Eliminar la noticia "${titulo}"? Esta acción no se puede deshacer.`,
+      )
+    )
+      return;
     try {
       await api.delete(`/noticias/${id}`);
-      toast.success('Noticia eliminada correctamente.');
+      toast.success("Noticia eliminada correctamente.");
       setNoticias((prev) => prev.filter((n) => n.id !== id));
     } catch (err) {
-      const msg = err.response?.data?.message || 'No se pudo eliminar la noticia.';
+      const msg =
+        err.response?.data?.message || "No se pudo eliminar la noticia.";
       toast.error(msg);
     }
   }
 
   return (
     <div>
+      {/* Hidden PDF input */}
+      <input
+        type="file"
+        accept="application/pdf"
+        ref={pdfInputRef}
+        onChange={handlePdfChange}
+        className="hidden"
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Gestionar Noticias</h1>
+          <h1 className="text-2xl font-extrabold text-gray-900">
+            Gestionar Noticias
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
-            {loading ? 'Cargando...' : `${noticias.length} noticias en total`}
+            {loading ? "Cargando..." : `${noticias.length} noticias en total`}
           </p>
         </div>
         <button
@@ -164,7 +243,11 @@ export default function ManageNews() {
       {/* Buscador */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-5">
         <div className="relative max-w-sm">
-          <Search size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search
+            size={16}
+            strokeWidth={1.5}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
           <input
             id="news-search"
             type="text"
@@ -191,37 +274,65 @@ export default function ManageNews() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">ID</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">Título</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">Categoría</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">Fecha</th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">Autor</th>
-                <th className="text-center text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">Acciones</th>
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">
+                  ID
+                </th>
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">
+                  Título
+                </th>
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">
+                  Categoría
+                </th>
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">
+                  PDF
+                </th>
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">
+                  Fecha
+                </th>
+                <th className="text-center text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3.5">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
-                // filas skeleton mientras carga
                 Array.from({ length: 4 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-5 py-4"><div className="h-3 bg-gray-200 rounded w-8" /></td>
-                    <td className="px-5 py-4"><div className="h-3 bg-gray-200 rounded w-48" /></td>
-                    <td className="px-5 py-4"><div className="h-3 bg-gray-200 rounded w-20" /></td>
-                    <td className="px-5 py-4"><div className="h-3 bg-gray-200 rounded w-24" /></td>
-                    <td className="px-5 py-4"><div className="h-3 bg-gray-200 rounded w-16" /></td>
-                    <td className="px-5 py-4"><div className="h-3 bg-gray-200 rounded w-16 mx-auto" /></td>
+                    <td className="px-5 py-4">
+                      <div className="h-3 bg-gray-200 rounded w-8" />
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="h-3 bg-gray-200 rounded w-48" />
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="h-3 bg-gray-200 rounded w-20" />
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="h-3 bg-gray-200 rounded w-10" />
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="h-3 bg-gray-200 rounded w-24" />
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="h-3 bg-gray-200 rounded w-16 mx-auto" />
+                    </td>
                   </tr>
                 ))
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center text-gray-400 text-sm py-10">
+                  <td
+                    colSpan={6}
+                    className="text-center text-gray-400 text-sm py-10"
+                  >
                     No se encontraron noticias
                   </td>
                 </tr>
               ) : (
                 filtered.map((n) => (
                   <tr key={n.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-3.5 text-gray-400 font-mono text-xs">#{n.id}</td>
+                    <td className="px-5 py-3.5 text-gray-400 font-mono text-xs">
+                      #{n.id}
+                    </td>
                     <td className="px-5 py-3.5 font-medium text-gray-800 max-w-xs truncate">
                       {n.titulo}
                       {n.destacada && (
@@ -231,13 +342,32 @@ export default function ManageNews() {
                       )}
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold
-                        ${CATEGORY_COLORS[n.categoria] || 'bg-gray-100 text-gray-600'}`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold
+                        ${CATEGORY_COLORS[n.categoria] || "bg-gray-100 text-gray-600"}`}
+                      >
                         {n.categoria}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5 text-gray-500 text-xs">{formatDate(n.fechaPublicacion)}</td>
-                    <td className="px-5 py-3.5 text-gray-500 text-xs">{n.autorUsername}</td>
+                    <td className="px-5 py-3.5">
+                      {n.urlPdf ? (
+                        <a
+                          href={n.urlPdf}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-xs text-marcona-blue hover:underline"
+                          title="Ver PDF"
+                        >
+                          <FileText size={13} />
+                          PDF
+                        </a>
+                      ) : (
+                        <span className="text-xs text-gray-300">—</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3.5 text-gray-500 text-xs">
+                      {formatDate(n.fechaPublicacion)}
+                    </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-center gap-2">
                         <button
@@ -266,7 +396,9 @@ export default function ManageNews() {
         {/* Pie de tabla */}
         {!loading && (
           <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
-            <p className="text-xs text-gray-400">{filtered.length} resultados</p>
+            <p className="text-xs text-gray-400">
+              {filtered.length} resultados
+            </p>
           </div>
         )}
       </div>
@@ -275,15 +407,20 @@ export default function ManageNews() {
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-          onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeModal();
+          }}
         >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             {/* Cabecera del modal */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
               <h2 className="font-extrabold text-gray-900 text-lg">
-                {editingId ? 'Editar Noticia' : 'Nueva Noticia'}
+                {editingId ? "Editar Noticia" : "Nueva Noticia"}
               </h2>
-              <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
+              <button
+                onClick={closeModal}
+                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+              >
                 <X size={18} />
               </button>
             </div>
@@ -292,10 +429,14 @@ export default function ManageNews() {
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
               {/* Título */}
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                <label
+                  htmlFor="news-titulo"
+                  className="block text-xs font-semibold text-gray-600 mb-1.5"
+                >
                   Título <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="news-titulo"
                   name="titulo"
                   value={formData.titulo}
                   onChange={handleChange}
@@ -309,10 +450,14 @@ export default function ManageNews() {
 
               {/* Categoría */}
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                <label
+                  htmlFor="news-categoria"
+                  className="block text-xs font-semibold text-gray-600 mb-1.5"
+                >
                   Categoría <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="news-categoria"
                   name="categoria"
                   value={formData.categoria}
                   onChange={handleChange}
@@ -332,8 +477,14 @@ export default function ManageNews() {
 
               {/* URL de Imagen */}
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">URL de Imagen</label>
+                <label
+                  htmlFor="news-imagen"
+                  className="block text-xs font-semibold text-gray-600 mb-1.5"
+                >
+                  URL de Imagen
+                </label>
                 <input
+                  id="news-imagen"
                   name="urlImagen"
                   value={formData.urlImagen}
                   onChange={handleChange}
@@ -344,12 +495,78 @@ export default function ManageNews() {
                 />
               </div>
 
+              {/* PDF adjunto — upload desde dispositivo */}
+              <div>
+                <p className="text-xs font-semibold text-gray-600 mb-1.5">
+                  PDF Adjunto
+                  <span className="text-gray-400 font-normal ml-1">
+                    (opcional)
+                  </span>
+                </p>
+
+                {/* PDF ya guardado en el backend */}
+                {existingPdfUrl && !pdfFile && (
+                  <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 mb-2">
+                    <FileText size={15} className="text-green-600 shrink-0" />
+                    <a
+                      href={existingPdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-green-700 hover:underline truncate flex-1"
+                    >
+                      PDF actual — ver
+                    </a>
+                    <ExternalLink
+                      size={12}
+                      className="text-green-500 shrink-0"
+                    />
+                  </div>
+                )}
+
+                {/* Archivo seleccionado pero aún no subido */}
+                {pdfFile ? (
+                  <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5">
+                    <FileText
+                      size={16}
+                      className="text-marcona-blue shrink-0"
+                    />
+                    <span className="text-xs text-gray-700 truncate flex-1">
+                      {pdfPreviewName}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={clearPdf}
+                      className="text-gray-400 hover:text-red-500 shrink-0"
+                      aria-label="Quitar PDF seleccionado"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => pdfInputRef.current?.click()}
+                    className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-marcona-blue
+                               rounded-xl py-3 text-sm text-gray-500 hover:text-marcona-blue transition-colors"
+                  >
+                    <Upload size={15} />
+                    {existingPdfUrl
+                      ? "Reemplazar PDF"
+                      : "Seleccionar PDF del dispositivo"}
+                  </button>
+                )}
+              </div>
+
               {/* Contenido */}
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                <label
+                  htmlFor="news-contenido"
+                  className="block text-xs font-semibold text-gray-600 mb-1.5"
+                >
                   Contenido <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  id="news-contenido"
                   name="contenido"
                   value={formData.contenido}
                   onChange={handleChange}
@@ -370,7 +587,9 @@ export default function ManageNews() {
                   onChange={handleChange}
                   className="w-4 h-4 text-marcona-blue accent-marcona-blue rounded"
                 />
-                <span className="text-sm text-gray-700">Marcar como destacada</span>
+                <span className="text-sm text-gray-700">
+                  Marcar como destacada
+                </span>
               </label>
 
               {/* Botones */}
@@ -393,8 +612,10 @@ export default function ManageNews() {
                       <Loader2 size={15} className="animate-spin" />
                       Guardando...
                     </span>
+                  ) : editingId ? (
+                    "Guardar Cambios"
                   ) : (
-                    editingId ? 'Guardar Cambios' : 'Publicar Noticia'
+                    "Publicar Noticia"
                   )}
                 </button>
               </div>

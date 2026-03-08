@@ -32,9 +32,9 @@ const SERVICES = [
     icon: ShieldAlert,
     iconBg: 'bg-red-50',
     iconColor: 'text-red-500',
-    title: 'Seguridad Ciudadana',
+    title: 'Seguridad Ciudadana', 
     subtitle: 'Contacto de emergencia y denuncias',
-    href: '#seguridad',
+    href: 'https://denuncias.servicios.gob.pe/',
     id: 'service-seguridad',
   },
 ];
@@ -43,6 +43,7 @@ export default function ServiceCards() {
   return (
     <section className="relative z-10 -mt-10 px-4 max-w-5xl mx-auto mb-12">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* eslint-disable-next-line no-unused-vars */}
         {SERVICES.map(({ icon: Icon, iconBg, iconColor, title, subtitle, href, id }) => (
           <a
             key={id}
