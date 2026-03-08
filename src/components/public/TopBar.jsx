@@ -91,7 +91,16 @@ export default function TopBar() {
               Reclamos y Sugerencias
             </Link>
 
-            
+            {/* Botón de Portal de transparencia (sutil) */}
+            <a
+              href="https://transparencia.gob.pe/enlaces/pte_transparencia_enlaces.aspx?id_entidad=11448#.Yqs90nbMKUn"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-marcona-blue hover:bg-gray-50 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-gray-200"
+            >
+              <FileText size={14} strokeWidth={2} />
+              Portal de transparencia
+            </a>
           </div>
         </div>
       </div>

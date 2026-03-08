@@ -79,6 +79,7 @@ export default function ManageSolicitudes() {
       if (selectedDoc && selectedDoc.id === id) {
         setSelectedDoc((prev) => ({ ...prev, estado: nuevoEstado }));
       }
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       toast.error("No se pudo actualizar el estado.");
     } finally {
