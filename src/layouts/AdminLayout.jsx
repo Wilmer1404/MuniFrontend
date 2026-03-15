@@ -11,7 +11,6 @@ import {
   List,
   Users,
   Network,
-  MessageSquare,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -31,12 +30,6 @@ const NAV_ITEMS = [
   },
   { to: "/admin/menu", label: "Gestión de Menú", icon: List, end: false },
   {
-    to: "/admin/paginas",
-    label: "Gestión de Páginas",
-    icon: FileText,
-    end: false,
-  },
-  {
     to: "/admin/organigrama",
     label: "Organigrama",
     icon: Network,
@@ -46,12 +39,6 @@ const NAV_ITEMS = [
     to: "/admin/consejo",
     label: "Consejo Municipal",
     icon: Users,
-    end: false,
-  },
-  {
-    to: "/admin/solicitudes",
-    label: "Reclamos y Sugerencias",
-    icon: MessageSquare,
     end: false,
   },
 ];

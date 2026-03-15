@@ -10,6 +10,7 @@ import {
   FileText,
   Upload,
   ExternalLink,
+  Image,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../services/api";
@@ -65,6 +66,12 @@ export default function ManageNews() {
   const [existingPdfUrl, setExistingPdfUrl] = useState(""); // url del pdf ya guardado
   const pdfInputRef = useRef(null);
 
+  // image upload state
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreviewName, setImagePreviewName] = useState("");
+  const [existingImageUrl, setExistingImageUrl] = useState("");
+  const imageInputRef = useRef(null);
+
   // carga la lista de noticias desde el backend
   const fetchNoticias = useCallback(async () => {
     setLoading(true);
@@ -99,6 +106,9 @@ export default function ManageNews() {
     setPdfFile(null);
     setPdfPreviewName("");
     setExistingPdfUrl("");
+    setImageFile(null);
+    setImagePreviewName("");
+    setExistingImageUrl("");
     setModalOpen(true);
   }
 
@@ -116,6 +126,9 @@ export default function ManageNews() {
     setPdfFile(null);
     setPdfPreviewName("");
     setExistingPdfUrl(noticia.urlPdf || "");
+    setImageFile(null);
+    setImagePreviewName("");
+    setExistingImageUrl(noticia.urlImagen || "");
     setModalOpen(true);
   }
 
@@ -126,6 +139,9 @@ export default function ManageNews() {
     setPdfFile(null);
     setPdfPreviewName("");
     setExistingPdfUrl("");
+    setImageFile(null);
+    setImagePreviewName("");
+    setExistingImageUrl("");
   }
 
   function handleChange(e) {
@@ -153,6 +169,23 @@ export default function ManageNews() {
     if (pdfInputRef.current) pdfInputRef.current.value = "";
   }
 
+  function handleImageChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Solo se aceptan archivos de imagen (JPG, PNG, WebP).");
+      return;
+    }
+    setImageFile(file);
+    setImagePreviewName(file.name);
+  }
+
+  function clearImage() {
+    setImageFile(null);
+    setImagePreviewName("");
+    if (imageInputRef.current) imageInputRef.current.value = "";
+  }
+
   // crea o edita una noticia, luego sube el pdf si hay uno seleccionado
   async function handleSubmit(e) {
     e.preventDefault();
@@ -177,6 +210,16 @@ export default function ManageNews() {
           headers: { "Content-Type": "multipart/form-data" },
         });
         toast.success("PDF adjunto subido correctamente.");
+      }
+
+      // subir la imagen si el admin seleccionó una
+      if (imageFile && savedId) {
+        const fd = new FormData();
+        fd.append("file", imageFile);
+        await api.post(`/noticias/${savedId}/upload-imagen`, fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("Imagen de portada subida correctamente.");
       }
 
       closeModal();
@@ -211,12 +254,19 @@ export default function ManageNews() {
 
   return (
     <div>
-      {/* Hidden PDF input */}
+      {/* Hidden inputs */}
       <input
         type="file"
         accept="application/pdf"
         ref={pdfInputRef}
         onChange={handlePdfChange}
+        className="hidden"
+      />
+      <input
+        type="file"
+        accept="image/*"
+        ref={imageInputRef}
+        onChange={handleImageChange}
         className="hidden"
       />
 
@@ -475,24 +525,63 @@ export default function ManageNews() {
                 </select>
               </div>
 
-              {/* URL de Imagen */}
+              {/* Imagen principal — upload desde dispositivo */}
               <div>
-                <label
-                  htmlFor="news-imagen"
-                  className="block text-xs font-semibold text-gray-600 mb-1.5"
-                >
-                  URL de Imagen
-                </label>
-                <input
-                  id="news-imagen"
-                  name="urlImagen"
-                  value={formData.urlImagen}
-                  onChange={handleChange}
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                  type="url"
-                  className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
-                             focus:outline-none focus:ring-2 focus:ring-marcona-blue/30 focus:border-marcona-blue transition"
-                />
+                <p className="text-xs font-semibold text-gray-600 mb-1.5">
+                  Imagen de Portada
+                  <span className="text-gray-400 font-normal ml-1">
+                    (opcional)
+                  </span>
+                </p>
+
+                {/* Imagen ya guardada en el backend */}
+                {existingImageUrl && !imageFile && (
+                  <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 mb-2">
+                    <Image size={15} className="text-green-600 shrink-0" />
+                    <a
+                      href={existingImageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-green-700 hover:underline truncate flex-1"
+                    >
+                      Ver imagen actual
+                    </a>
+                    <ExternalLink
+                      size={12}
+                      className="text-green-500 shrink-0"
+                    />
+                  </div>
+                )}
+
+                {/* Archivo seleccionado pero aún no subido */}
+                {imageFile ? (
+                  <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5">
+                    <Image size={16} className="text-marcona-blue shrink-0" />
+                    <span className="text-xs text-gray-700 truncate flex-1">
+                      {imagePreviewName}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={clearImage}
+                      className="text-gray-400 hover:text-red-500 shrink-0"
+                      aria-label="Quitar imagen seleccionada"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => imageInputRef.current?.click()}
+                    className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-marcona-blue
+                               rounded-xl py-3 text-sm text-gray-500 hover:text-marcona-blue transition-colors"
+                  >
+                    <Upload size={15} />
+                    {existingImageUrl
+                      ? "Reemplazar Imagen"
+                      : "Subir Imagen del dispositivo"}
+                  </button>
+                )}
               </div>
 
               {/* PDF adjunto — upload desde dispositivo */}

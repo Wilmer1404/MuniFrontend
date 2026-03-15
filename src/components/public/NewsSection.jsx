@@ -1,25 +1,26 @@
-import { useState, useEffect } from 'react';
-import { ArrowRight, Tag, AlertCircle } from 'lucide-react';
-import api from '../../services/api';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, Tag, AlertCircle } from "lucide-react";
+import api from "../../services/api";
 
 // colores por categoría para los badges
 const CATEGORY_COLORS = {
-  Obras: 'bg-blue-600',
-  Salud: 'bg-green-600',
-  Comunicado: 'bg-marcona-gold',
-  Normativa: 'bg-orange-600',
-  Cultura: 'bg-purple-600',
-  Educación: 'bg-indigo-600',
+  Obras: "bg-blue-600",
+  Salud: "bg-green-600",
+  Comunicado: "bg-marcona-gold",
+  Normativa: "bg-orange-600",
+  Cultura: "bg-purple-600",
+  Educación: "bg-indigo-600",
 };
 
 // formatea una fecha ISO a español legible
 function formatDate(isoString) {
-  if (!isoString) return '';
+  if (!isoString) return "";
   try {
-    return new Date(isoString).toLocaleDateString('es-PE', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+    return new Date(isoString).toLocaleDateString("es-PE", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   } catch {
     return isoString;
@@ -51,14 +52,16 @@ export default function NewsSection() {
 
     async function fetchNoticias() {
       try {
-        const res = await api.get('/noticias/recientes');
+        const res = await api.get("/noticias/recientes");
         if (!cancelled) {
           setNoticias(res.data);
         }
       } catch (err) {
         if (!cancelled) {
-          setError('No se pudieron cargar las noticias. Intente nuevamente más tarde.');
-          console.error('Error al cargar noticias recientes:', err);
+          setError(
+            "No se pudieron cargar las noticias. Intente nuevamente más tarde.",
+          );
+          console.error("Error al cargar noticias recientes:", err);
         }
       } finally {
         if (!cancelled) {
@@ -70,7 +73,9 @@ export default function NewsSection() {
     fetchNoticias();
 
     // cleanup: evita actualizar estado si el componente se desmonta
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -86,18 +91,22 @@ export default function NewsSection() {
               Noticias y Comunicados
             </h2>
           </div>
-          <a
-            href="/noticias"
+          <Link
+            to="/noticias"
             className="hidden sm:flex items-center gap-1.5 text-marcona-blue font-semibold text-sm hover:text-blue-800 transition-colors"
           >
             Ver todas <ArrowRight size={16} strokeWidth={1.5} />
-          </a>
+          </Link>
         </div>
 
         {/* Estado de error */}
         {error && (
           <div className="flex items-center gap-3 bg-red-50 border border-red-100 text-red-700 rounded-xl px-5 py-4 mb-6">
-            <AlertCircle size={18} strokeWidth={1.5} className="flex-shrink-0" />
+            <AlertCircle
+              size={18}
+              strokeWidth={1.5}
+              className="flex-shrink-0"
+            />
             <p className="text-sm">{error}</p>
           </div>
         )}
@@ -115,7 +124,8 @@ export default function NewsSection() {
             </p>
           ) : (
             noticias.map((item) => {
-              const badgeColor = CATEGORY_COLORS[item.categoria] || 'bg-gray-500';
+              const badgeColor =
+                CATEGORY_COLORS[item.categoria] || "bg-gray-500";
               return (
                 <article
                   key={item.id}
@@ -134,15 +144,23 @@ export default function NewsSection() {
                       <div className="w-full h-full bg-gradient-to-br from-marcona-blue/10 to-marcona-blue/30 flex items-center justify-center">
                         <div className="text-center px-6">
                           <div className="w-12 h-12 bg-marcona-blue/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                            <Tag size={20} strokeWidth={1.5} className="text-marcona-blue" />
+                            <Tag
+                              size={20}
+                              strokeWidth={1.5}
+                              className="text-marcona-blue"
+                            />
                           </div>
-                          <p className="text-marcona-blue/60 text-xs font-medium">Comunicado oficial</p>
+                          <p className="text-marcona-blue/60 text-xs font-medium">
+                            Comunicado oficial
+                          </p>
                         </div>
                       </div>
                     )}
 
                     {/* Badge categoría */}
-                    <span className={`absolute top-3 left-3 ${badgeColor} text-white text-[11px] font-bold px-2.5 py-1 rounded-full`}>
+                    <span
+                      className={`absolute top-3 left-3 ${badgeColor} text-white text-[11px] font-bold px-2.5 py-1 rounded-full`}
+                    >
                       {item.categoria}
                     </span>
                   </div>
@@ -158,12 +176,12 @@ export default function NewsSection() {
                     <p className="text-gray-500 text-xs leading-relaxed line-clamp-3">
                       {item.contenido}
                     </p>
-                    <a
-                      href="#"
+                    <Link
+                      to={`/noticias/${item.id}`}
                       className="inline-flex items-center gap-1 text-marcona-blue font-semibold text-xs mt-4 hover:text-blue-800 transition-colors"
                     >
                       Leer más <ArrowRight size={13} strokeWidth={2} />
-                    </a>
+                    </Link>
                   </div>
                 </article>
               );

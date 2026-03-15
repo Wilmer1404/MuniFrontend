@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { useState } from "react";
+import { Search } from "lucide-react";
 
 export default function Hero() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -27,17 +27,21 @@ export default function Hero() {
           Portal Ciudadano Digital
         </p>
         <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4 drop-shadow-lg">
-          Bienvenidos a tu Nueva{' '}
+          Bienvenidos a tu Nueva{" "}
           <span className="text-marcona-gold">Municipalidad Digital.</span>
           <br />
           Cerca de Ti.
         </h2>
         <p className="text-white/80 text-base mb-8">
-          Accede a trámites, noticias y servicios municipales desde cualquier lugar.
+          Accede a trámites, noticias y servicios municipales desde cualquier
+          lugar.
         </p>
 
         {/* Barra de búsqueda */}
-        <form onSubmit={handleSearch} className="flex items-center bg-white rounded-full shadow-2xl overflow-hidden max-w-xl mx-auto">
+        <form
+          onSubmit={handleSearch}
+          className="flex items-center bg-white rounded-full shadow-2xl overflow-hidden max-w-xl mx-auto"
+        >
           <input
             type="text"
             value={query}
@@ -57,7 +61,12 @@ export default function Hero() {
 
       {/* Wave bottom */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 60" preserveAspectRatio="none" className="w-full h-10" fill="white">
+        <svg
+          viewBox="0 0 1440 60"
+          preserveAspectRatio="none"
+          className="w-full h-10"
+          fill="white"
+        >
           <path d="M0,60 C240,20 480,0 720,20 C960,40 1200,60 1440,30 L1440,60 Z" />
         </svg>
       </div>
