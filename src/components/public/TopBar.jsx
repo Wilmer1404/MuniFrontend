@@ -103,6 +103,18 @@ export default function TopBar() {
               <FileText size={14} strokeWidth={2} />
               Portal de transparencia
             </a>
+
+            {/* Botón de Plataforma Digital Única de Denuncias del Ciudadano */}
+            <a
+              href="https://denuncias.servicios.gob.pe/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-marcona-blue hover:bg-gray-50 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-gray-200"
+            >
+              <FileText size={14} strokeWidth={2} />
+              Denuncias del Ciudadano
+            </a>
+
           </div>
         </div>
       </div>
