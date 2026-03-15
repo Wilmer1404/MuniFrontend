@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FileText, Contrast } from "lucide-react";
+import { FileText} from "lucide-react";
 
 export default function TopBar() {
   const [fontSize, setFontSize] = useState(16);
-  const [highContrast, setHighContrast] = useState(false);
 
   const increaseFontSize = () => {
     const newSize = Math.min(fontSize + 2, 20);
@@ -18,10 +17,6 @@ export default function TopBar() {
     document.documentElement.style.fontSize = `${newSize}px`;
   };
 
-  const toggleContrast = () => {
-    setHighContrast(!highContrast);
-    document.documentElement.classList.toggle("high-contrast");
-  };
 
   return (
     <header className="bg-white border-b border-gray-100 shadow-sm">
@@ -68,19 +63,7 @@ export default function TopBar() {
               >
                 A+
               </button>
-              <div className="w-px h-4 bg-gray-200" />
-              <button
-                onClick={toggleContrast}
-                title="Alto contraste"
-                className={`px-2 py-1 rounded transition-colors ${
-                  highContrast
-                    ? "bg-black text-white"
-                    : "text-gray-600 hover:text-marcona-blue"
-                }`}
-              >
-                <Contrast size={16} strokeWidth={1.5} />
-              </button>
-            </div>
+             </div>
 
             {/* Botón Libro Reclamaciones (sutil) */}
             <a
@@ -114,7 +97,6 @@ export default function TopBar() {
               <FileText size={14} strokeWidth={2} />
               Denuncias del Ciudadano
             </a>
-
           </div>
         </div>
       </div>
