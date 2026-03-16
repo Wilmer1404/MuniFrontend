@@ -50,12 +50,12 @@ export default function ManageDocuments() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
-  // estado del modal
+  // edwind, aquí vemos si la ventana de crear está abierta o cerrada
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState(DOC_FORM_INITIAL);
   const [submitting, setSubmitting] = useState(false);
 
-  // pdf desde dispositivo
+  // edwind, esto guarda el archivo pdf que la gente quiere subir
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfName, setPdfName] = useState("");
   const pdfInputRef = useRef(null);
@@ -65,7 +65,7 @@ export default function ManageDocuments() {
     setError(null);
     try {
       const res = await api.get("/documentos", { params: { size: 100 } });
-      // el backend devuelve Page<DocumentoResponse>
+      // edwind, el servidor nos manda los documentos paginados, así que sacamos el contenido
       const data = res.data?.content ?? res.data;
       setDocumentos(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -136,7 +136,7 @@ export default function ManageDocuments() {
 
     setSubmitting(true);
     try {
-      // paso 1: crear el registro del documento (sin PDF aún)
+      // edwind, primer paso: guardamos los datos del documento pero todavía sin el archivo
       const res = await api.post("/documentos", {
         ...formData,
         anio: Number(formData.anio),
@@ -144,7 +144,7 @@ export default function ManageDocuments() {
       });
       const docId = res.data.id;
 
-      // paso 2: subir el PDF al servidor
+      // edwind, segundo paso: ahora sí enviamos el archivo pdf al servidor
       const fd = new FormData();
       fd.append("file", pdfFile);
       await api.post(`/documentos/${docId}/upload-pdf`, fd, {
@@ -179,7 +179,7 @@ export default function ManageDocuments() {
 
   return (
     <div>
-      {/* Hidden PDF input */}
+      {/* edwind, este input está escondido pero es el que hace la magia de subir archivos */}
       <input
         type="file"
         accept="application/pdf"
@@ -189,8 +189,8 @@ export default function ManageDocuments() {
         id="doc-pdf-input"
       />
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      {/* edwind, la barra de arriba con el título grande */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900">
             Gestionar Documentos
@@ -205,14 +205,14 @@ export default function ManageDocuments() {
           id="upload-doc-btn"
           type="button"
           onClick={openCreateModal}
-          className="btn-primary text-sm"
+          className="btn-primary text-sm w-full sm:w-auto justify-center"
         >
           <Upload size={16} strokeWidth={2} />
           Subir Documento
         </button>
       </div>
 
-      {/* Info: docs se usan en el menú */}
+      {/* edwind, un consejito para recordarles que estos documentos salen en el menú principal */}
       <div className="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-xl px-5 py-3 mb-5">
         <Link2 size={15} className="text-marcona-blue mt-0.5 shrink-0" />
         <p className="text-xs text-blue-700">
@@ -222,7 +222,7 @@ export default function ManageDocuments() {
         </p>
       </div>
 
-      {/* Buscador */}
+      {/* edwind, el cajoncito para buscar documentos al toque */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-5">
         <div className="relative max-w-sm">
           <Search
@@ -242,7 +242,7 @@ export default function ManageDocuments() {
         </div>
       </div>
 
-      {/* Error */}
+      {/* edwind, por si explota algo leyendo los documentos */}
       {error && (
         <div className="flex items-center gap-3 bg-red-50 border border-red-100 text-red-700 rounded-xl px-5 py-4 mb-5">
           <AlertCircle size={16} className="flex-shrink-0" />
@@ -250,7 +250,7 @@ export default function ManageDocuments() {
         </div>
       )}
 
-      {/* Tabla */}
+      {/* edwind, y acá armamos la tabla gigante con toda la info */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -390,7 +390,7 @@ export default function ManageDocuments() {
         )}
       </div>
 
-      {/* Modal — subir nuevo documento */}
+      {/* edwind, esta es la ventana que aparece cuando quieren agregar un documento nuevo */}
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
@@ -414,7 +414,7 @@ export default function ManageDocuments() {
             </div>
 
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-              {/* Tipo */}
+              {/* edwind, para que elijan si es ordenanza, decreto, etc */}
               <div>
                 <label
                   htmlFor="doc-tipo"
@@ -440,7 +440,7 @@ export default function ManageDocuments() {
                 </select>
               </div>
 
-              {/* Número y Año */}
+              {/* edwind, ponemos el numerito y en qué año salió */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label
@@ -480,7 +480,7 @@ export default function ManageDocuments() {
                 </div>
               </div>
 
-              {/* Título */}
+              {/* edwind, el nombre del documento para que la gente sepa qué es */}
               <div>
                 <label
                   htmlFor="doc-titulo"
@@ -500,14 +500,14 @@ export default function ManageDocuments() {
                 />
               </div>
 
-              {/* PDF desde dispositivo */}
+              {/* edwind, aquí está la zona para que arrastren o seleccionen su pdf */}
               <div>
                 <p className="block text-xs font-semibold text-gray-600 mb-1.5">
                   Archivo PDF <span className="text-red-500">*</span>
                 </p>
 
                 {pdfFile ? (
-                  /* archivo ya seleccionado */
+                  /* edwind, si ya eligió un archivo, le mostramos un verdecito de que todo está ok */
                   <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
                     <CheckCircle
                       size={16}
@@ -526,7 +526,7 @@ export default function ManageDocuments() {
                     </button>
                   </div>
                 ) : (
-                  /* zona de clic para seleccionar */
+                  /* edwind, si todavía no elige nada, mostramos el cuadro punteado para subir */
                   <button
                     type="button"
                     onClick={() => pdfInputRef.current?.click()}

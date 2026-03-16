@@ -20,9 +20,9 @@ import {
 } from "../../services/menu.service";
 import api from "../../services/api";
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// edwind, unas funciones de ayudita por aquí
 
-/** Aplana el árbol completo de menús en una lista plana con nivel de indentación */
+// edwind, esta función sirve para aplanar todo el menú y saber qué nivel de profundidad tienen
 function flattenTree(items, level = 0) {
   const result = [];
   for (const item of items) {
@@ -34,19 +34,19 @@ function flattenTree(items, level = 0) {
   return result;
 }
 
-/** Genera la sangría visual basada en el nivel */
+// edwind, y esto para que se vea bonito con guiones dependiendo de si es submenú
 function indent(level) {
   return `${"— ".repeat(level)}`;
 }
 
-// ─── Fetch de documentos ────────────────────────────────────────────────────
+// edwind, aquí nos traemos los documentos para enlazarlos fácil
 const fetchAllDocuments = async () => {
   const { data } = await api.get("/documentos", { params: { size: 100 } });
   const list = data?.content ?? data;
   return Array.isArray(list) ? list : [];
 };
 
-// ─── Componente principal ───────────────────────────────────────────────────
+// edwind, y pasamos al componente grandote que hace todo
 export default function ManageMenu() {
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +63,7 @@ export default function ManageMenu() {
     parentId: "",
   });
 
-  // todos los ítems aplanados con nivel (para el selector de padre)
+  // edwind, guardamos los ítems aplanados para usarlos en el selector de quién es el papá
   const [flatItems, setFlatItems] = useState([]);
 
   const fetchMenus = async () => {
@@ -151,7 +151,7 @@ export default function ManageMenu() {
     }
   };
 
-  // ─── Selector de documento ─────────────────────────────────────────────
+  // edwind, esta parte es el cuadrito para elegir un documento rápido
   const renderDocumentPicker = () => {
     if (!Array.isArray(documentos) || documentos.length === 0) return null;
     return (
@@ -196,11 +196,11 @@ export default function ManageMenu() {
     );
   };
 
-  // ─── Formulario modal ──────────────────────────────────────────────────
+  // edwind, y acá armamos la ventana para editar o crear un enlace
   const renderForm = () => {
     if (!isFormOpen) return null;
 
-    // opciones del selector de padre: todos los ítems EXCEPTO el que se está editando y sus descendientes
+    // edwind, mostramos todos los posibles padres menos el ítem actual para no enredarnos
     const parentOptions = flatItems.filter((item) => item.id !== editingId);
 
     return (
@@ -215,7 +215,7 @@ export default function ManageMenu() {
           onClick={(e) => e.stopPropagation()}
           role="presentation"
         >
-          {/* Header */}
+          {/* edwind, la barra de arriba del cuadro */}
           <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
             <h3 className="text-lg font-bold text-gray-800">
               {editingId ? "Editar Enlace" : "Nuevo Enlace"}
@@ -231,7 +231,7 @@ export default function ManageMenu() {
           </div>
 
           <form onSubmit={handleSubmit} className="p-4 space-y-4">
-            {/* Nombre */}
+            {/* edwind, el nombre que va a tener el botón o enlace */}
             <div>
               <label
                 htmlFor="menu-label"
@@ -252,10 +252,10 @@ export default function ManageMenu() {
               />
             </div>
 
-            {/* Selector de Documento */}
+            {/* edwind, el selector mágico de documentos que hicimos antes */}
             {renderDocumentPicker()}
 
-            {/* URL manual */}
+            {/* edwind, por si queremos meter a mano el enlace */}
             <div>
               <label
                 htmlFor="menu-url"
@@ -278,7 +278,7 @@ export default function ManageMenu() {
               />
             </div>
 
-            {/* Orden y Visibilidad */}
+            {/* edwind, si va a salir primero y si la gente lo puede ver */}
             <div className="flex gap-4">
               <div className="flex-1">
                 <label
@@ -324,7 +324,7 @@ export default function ManageMenu() {
               </div>
             </div>
 
-            {/* Menú Padre — cualquier nivel */}
+            {/* edwind, elegimos quién es su menú jefe o si está en la raíz */}
             <div>
               <label
                 htmlFor="menu-parent"
@@ -376,7 +376,7 @@ export default function ManageMenu() {
     );
   };
 
-  // ─── Fila de árbol ─────────────────────────────────────────────────────
+  // edwind, este trozo dibuja cada fila del menú con su respectiva sangría visual
   const renderTreeRow = (item, level = 0) => {
     const hasChildren = item.children && item.children.length > 0;
     return (
@@ -385,11 +385,17 @@ export default function ManageMenu() {
           className={`flex items-center justify-between py-2.5 px-4 border-b border-gray-50 hover:bg-gray-50 transition-colors`}
           style={{ paddingLeft: `${16 + level * 20}px` }}
         >
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-start sm:items-center gap-2 min-w-0">
             {level > 0 ? (
-              <ChevronRight size={14} className="text-gray-300 shrink-0" />
+              <ChevronRight
+                size={14}
+                className="text-gray-300 shrink-0 mt-0.5 sm:mt-0"
+              />
             ) : (
-              <List size={16} className="text-marcona-blue shrink-0" />
+              <List
+                size={16}
+                className="text-marcona-blue shrink-0 mt-0.5 sm:mt-0"
+              />
             )}
             <div className="min-w-0">
               <span
@@ -436,18 +442,18 @@ export default function ManageMenu() {
             </div>
           </div>
         </div>
-        {/* Renderizar hijos recursivamente */}
+        {/* edwind, si tiene submenús, los dibujamos llamando a esta misma función */}
         {hasChildren &&
           item.children.map((child) => renderTreeRow(child, level + 1))}
       </React.Fragment>
     );
   };
 
-  // ─── Render principal ──────────────────────────────────────────────────
+  // edwind, por fin dibujamos toda la página junta
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* edwind, el titulazo de la página en la sección de menús */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Gestión de Menú</h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -461,14 +467,14 @@ export default function ManageMenu() {
             resetForm();
             setIsFormOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-marcona-blue text-white rounded-lg hover:bg-blue-800 font-medium text-sm shadow-sm"
+          className="flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto bg-marcona-blue text-white rounded-lg hover:bg-blue-800 font-medium text-sm shadow-sm"
         >
           <Plus size={18} />
           Nuevo Enlace
         </button>
       </div>
 
-      {/* Error */}
+      {/* edwind, mensajito rojo por si reventó algo */}
       {error && (
         <div className="p-4 bg-red-50 text-red-700 rounded-lg flex items-center gap-3">
           <AlertCircle size={20} />
@@ -476,7 +482,7 @@ export default function ManageMenu() {
         </div>
       )}
 
-      {/* Tip documentos */}
+      {/* edwind, un consejito chiquito para los usuarios */}
       {documentos.length > 0 && (
         <div className="flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-xl px-5 py-3">
           <FileText size={16} className="text-marcona-blue mt-0.5 shrink-0" />
@@ -487,7 +493,7 @@ export default function ManageMenu() {
         </div>
       )}
 
-      {/* Leyenda de niveles */}
+      {/* edwind, y aquí explicamos qué significa cada guioncito del menú */}
       <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 bg-gray-50 rounded-xl px-4 py-2.5">
         <div className="flex items-center gap-1">
           <List size={13} className="text-marcona-blue" />
@@ -504,7 +510,7 @@ export default function ManageMenu() {
         </div>
       </div>
 
-      {/* Árbol de menús */}
+      {/* edwind, el contenedor grande donde listamos todo el árbol */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Cargando menús...</div>

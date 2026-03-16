@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// instancia central de axios apuntando al backend
+// edwind, esta es nuestra instancia central de axios que apunta al backend
 const api = axios.create({
   baseURL: 'http://localhost:8080/api',
   headers: {
@@ -8,7 +8,7 @@ const api = axios.create({
   },
 });
 
-// interceptor de request: inyecta el JWT en cada llamada
+// edwind, este interceptor agarra cada petición y le mete el token jwt si es que lo tenemos
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -20,19 +20,22 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// interceptor de response: maneja sesión inválida/expirada
+// edwind, y este interceptor revisa las respuestas por si el token ya venció o es inválido
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
-    // 401 = token expirado o inválido | 403 = sin permiso para ese recurso
+    // edwind, si nos da 401 es porque el token ya no sirve, y 403 es que no tenemos permiso
     if (status === 401 || status === 403) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      // solo redirigir si no estamos ya en /login para evitar loop
+      // edwind, muy importante, solo redirigimos al login si no estamos ya ahí, si no se hace un bucle infinito
       if (!window.location.pathname.startsWith('/login')) {
         window.location.href = '/login';
       }
+    } else if (status === 429) {
+      // edwind, el rate limiting bloquea (fuerza bruta). Evitamos que la app explote y mandamos un aviso amigable
+      console.warn("Demasiados intentos. Por favor espera y vuelve a intentar.");
     }
     return Promise.reject(error);
   }

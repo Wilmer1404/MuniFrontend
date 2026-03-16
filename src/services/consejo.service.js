@@ -1,30 +1,30 @@
 import api from './api';
 
-// obtener todos los miembros del consejo (público)
+// edwind, con este traemos a todos los miembros del consejo para que el público los vea
 export const getConsejoMiembros = async () => {
   const { data } = await api.get('/consejo');
   return data;
 };
 
-// obtener un miembro por id (público)
+// edwind, y con este podemos sacar los datos de un solo miembro usando su id
 export const getConsejoMiembroById = async (id) => {
   const { data } = await api.get(`/consejo/${id}`);
   return data;
 };
 
-// crear un nuevo miembro (admin)
+// edwind, aquí es donde los admin pueden crear un nuevo miembro
 export const createConsejoMiembro = async (dto) => {
   const { data } = await api.post('/consejo', dto);
   return data;
 };
 
-// actualizar datos de un miembro (admin)
+// edwind, este sirve para que el admin actualice la info de alguien del consejo
 export const updateConsejoMiembro = async (id, dto) => {
   const { data } = await api.put(`/consejo/${id}`, dto);
   return data;
 };
 
-// subir o reemplazar la foto de un miembro (admin)
+// edwind, y este es clave para subir o cambiarle la foto a un miembro
 export const uploadFotoMiembro = async (id, file) => {
   const formData = new FormData();
   formData.append('foto', file);
@@ -34,7 +34,7 @@ export const uploadFotoMiembro = async (id, file) => {
   return data;
 };
 
-// eliminar un miembro (admin)
+// edwind, por último este es para borrar a un miembro del consejo
 export const deleteConsejoMiembro = async (id) => {
   await api.delete(`/consejo/${id}`);
 };

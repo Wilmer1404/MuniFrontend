@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Tag, AlertCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Tag,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import api from "../../services/api";
 
-// colores por categoría para los badges
+// edwind, aquí les asignamos un colorcito a cada categoría para que se vean diferentes
 const CATEGORY_COLORS = {
   Obras: "bg-blue-600",
   Salud: "bg-green-600",
@@ -13,7 +19,7 @@ const CATEGORY_COLORS = {
   Educación: "bg-indigo-600",
 };
 
-// formatea una fecha ISO a español legible
+// edwind, arreglamos las fechas feas para que salgan como "15 oct 2026"
 function formatDate(isoString) {
   if (!isoString) return "";
   try {
@@ -27,7 +33,7 @@ function formatDate(isoString) {
   }
 }
 
-// skeleton para mostrar mientras carga
+// edwind, estas son las tarjetas grises que parpadean mientras cargan las noticias reales
 function NewsCardSkeleton() {
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 animate-pulse">
@@ -46,15 +52,19 @@ export default function NewsSection() {
   const [noticias, setNoticias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
 
     async function fetchNoticias() {
+      setLoading(true);
       try {
-        const res = await api.get("/noticias/recientes");
+        const res = await api.get(`/noticias?page=${page}&size=6`);
         if (!cancelled) {
-          setNoticias(res.data);
+          setNoticias(res.data.content || []);
+          setTotalPages(res.data.totalPages || 1);
         }
       } catch (err) {
         if (!cancelled) {
@@ -72,16 +82,16 @@ export default function NewsSection() {
 
     fetchNoticias();
 
-    // cleanup: evita actualizar estado si el componente se desmonta
+    // edwind, limpiamos todo si el usuario se va a otra página antes de que carguen las noticias
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [page]);
 
   return (
     <section className="py-14 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+        {/* edwind, el encabezado de las noticias en la página principal */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <p className="text-marcona-gold font-semibold text-xs uppercase tracking-widest mb-1">
@@ -91,15 +101,9 @@ export default function NewsSection() {
               Noticias y Comunicados
             </h2>
           </div>
-          <Link
-            to="/noticias"
-            className="hidden sm:flex items-center gap-1.5 text-marcona-blue font-semibold text-sm hover:text-blue-800 transition-colors"
-          >
-            Ver todas <ArrowRight size={16} strokeWidth={1.5} />
-          </Link>
         </div>
 
-        {/* Estado de error */}
+        {/* edwind, si algo falló, mostramos un cuadrito rojo de alerta */}
         {error && (
           <div className="flex items-center gap-3 bg-red-50 border border-red-100 text-red-700 rounded-xl px-5 py-4 mb-6">
             <AlertCircle
@@ -111,10 +115,10 @@ export default function NewsSection() {
           </div>
         )}
 
-        {/* Grid de tarjetas */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {/* edwind, aquí enfilamos todas las noticias como si fueran cartas */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
-            // skeletons mientras carga
+            // edwind, mostramos los esqueletos grises si todavía está cargando
             Array.from({ length: 3 }).map((_, i) => (
               <NewsCardSkeleton key={i} />
             ))
@@ -132,7 +136,7 @@ export default function NewsSection() {
                   className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl
                              transition-all duration-300 hover:-translate-y-1 border border-gray-100"
                 >
-                  {/* Imagen */}
+                  {/* edwind, ponemos la foto principal de la noticia, o un fondo por defecto si no tiene */}
                   <div className="relative h-48 overflow-hidden">
                     {item.urlImagen ? (
                       <img
@@ -157,7 +161,7 @@ export default function NewsSection() {
                       </div>
                     )}
 
-                    {/* Badge categoría */}
+                    {/* edwind, la etiquetita de color que indica qué tipo de noticia es */}
                     <span
                       className={`absolute top-3 left-3 ${badgeColor} text-white text-[11px] font-bold px-2.5 py-1 rounded-full`}
                     >
@@ -165,7 +169,7 @@ export default function NewsSection() {
                     </span>
                   </div>
 
-                  {/* Contenido */}
+                  {/* edwind, el texto de la noticia y el enlace a leer más */}
                   <div className="p-5">
                     <time className="text-gray-400 text-xs font-medium">
                       {formatDate(item.fechaPublicacion)}
@@ -188,6 +192,32 @@ export default function NewsSection() {
             })
           )}
         </div>
+
+        {/* edwind, unos botoncitos elegantes abajo para pasar de página */}
+        {!loading && totalPages > 1 && (
+          <div className="mt-12 flex items-center justify-center gap-4">
+            <button
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={page === 0}
+              className="w-10 h-10 rounded-full flex items-center justify-center border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-marcona-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-marcona-blue/20"
+              aria-label="Página anterior"
+            >
+              <ChevronLeft size={20} strokeWidth={1.5} />
+            </button>
+            <span className="text-sm font-medium text-gray-400">
+              Página <strong className="text-gray-700">{page + 1}</strong> de{" "}
+              {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={page >= totalPages - 1}
+              className="w-10 h-10 rounded-full flex items-center justify-center border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-marcona-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-marcona-blue/20"
+              aria-label="Página siguiente"
+            >
+              <ChevronRight size={20} strokeWidth={1.5} />
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

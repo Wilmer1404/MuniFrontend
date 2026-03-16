@@ -31,17 +31,17 @@ export default function OrganigramaPage() {
       <TopBar />
       <Navbar />
 
-      {/* Página header */}
+      {/* edwind, la cabecera de la página del organigrama */}
       <div className="bg-marcona-blue text-white py-10 px-4 shadow-md">
-        <div className="max-w-6xl mx-auto flex items-center gap-4">
-          <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+          <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
             <FileText size={24} className="text-marcona-yellow" />
           </div>
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold">
               Organigrama Institucional
             </h1>
-            <p className="text-blue-200 mt-1">
+            <p className="text-blue-200 mt-1 text-sm sm:text-base">
               Municipalidad Distrital de Marcona
             </p>
           </div>
@@ -76,11 +76,11 @@ export default function OrganigramaPage() {
 
         {!loading && pdfUrl && (
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-            {/* Toolbar */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
+            {/* edwind, una barrita de herramientas arriba del pdf para abrirlo en otra pestaña */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50 gap-4">
               <div className="flex items-center gap-2 text-gray-700">
-                <FileText size={20} className="text-marcona-blue" />
-                <span className="font-semibold">
+                <FileText size={20} className="text-marcona-blue shrink-0" />
+                <span className="font-semibold text-sm sm:text-base">
                   Organigrama Institucional 2024
                 </span>
               </div>
@@ -88,14 +88,14 @@ export default function OrganigramaPage() {
                 href={pdfUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm bg-marcona-blue text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors"
+                className="flex items-center justify-center w-full sm:w-auto gap-2 text-sm bg-marcona-blue text-white px-4 py-2.5 rounded-lg hover:bg-blue-800 transition-colors"
               >
                 <ExternalLink size={15} />
                 Abrir en nueva pestaña
               </a>
             </div>
 
-            {/* PDF Viewer */}
+            {/* edwind, el visor mágico que muestra el pdf incrustado en la página */}
             <div className="w-full" style={{ height: "75vh" }}>
               <iframe
                 src={`${pdfUrl}#view=FitH`}

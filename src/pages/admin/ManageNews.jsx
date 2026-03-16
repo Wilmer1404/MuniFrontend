@@ -33,7 +33,7 @@ const FORM_INITIAL = {
   destacada: false,
 };
 
-// formatea fecha ISO a formato legible
+// edwind, esto es para que la fecha no salga como código de computadora sino bonita
 function formatDate(iso) {
   if (!iso) return "—";
   try {
@@ -54,25 +54,25 @@ export default function ManageNews() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
-  // estado del modal
+  // edwind, guardamos si el cuadro emergente está abierto o cerrado
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState(FORM_INITIAL);
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
-  // pdf upload state
+  // edwind, variables para cuando suben el archivo pdf
   const [pdfFile, setPdfFile] = useState(null); // archivo pdf seleccionado
   const [pdfPreviewName, setPdfPreviewName] = useState(""); // nombre para mostrar
   const [existingPdfUrl, setExistingPdfUrl] = useState(""); // url del pdf ya guardado
   const pdfInputRef = useRef(null);
 
-  // image upload state
+  // edwind, y estas para cuando suben la foto de portada
   const [imageFile, setImageFile] = useState(null);
   const [imagePreviewName, setImagePreviewName] = useState("");
   const [existingImageUrl, setExistingImageUrl] = useState("");
   const imageInputRef = useRef(null);
 
-  // carga la lista de noticias desde el backend
+  // edwind, traemos todas las noticias que están guardadas en la base de datos
   const fetchNoticias = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -99,7 +99,7 @@ export default function ManageNews() {
       n.categoria?.toLowerCase().includes(search.toLowerCase()),
   );
 
-  // abre el modal para crear
+  // edwind, limpiamos el formulario y abrimos el cuadro para crear una noticia nuevecita
   function openCreateModal() {
     setEditingId(null);
     setFormData({ ...FORM_INITIAL, autorId: user?.id });
@@ -112,7 +112,7 @@ export default function ManageNews() {
     setModalOpen(true);
   }
 
-  // abre el modal para editar
+  // edwind, llenamos los datos en el cuadro cuando quieren editar una noticia que ya existe
   function openEditModal(noticia) {
     setEditingId(noticia.id);
     setFormData({
@@ -186,7 +186,7 @@ export default function ManageNews() {
     if (imageInputRef.current) imageInputRef.current.value = "";
   }
 
-  // crea o edita una noticia, luego sube el pdf si hay uno seleccionado
+  // edwind, cuando le dan a guardar, verificamos si es nueva o no, y si hay pdf o foto, los subimos
   async function handleSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
@@ -202,7 +202,7 @@ export default function ManageNews() {
         toast.success("¡Noticia publicada con éxito!");
       }
 
-      // subir el pdf si el admin seleccionó uno
+      // edwind, si eligieron un pdf lo mandamos al servidor
       if (pdfFile && savedId) {
         const fd = new FormData();
         fd.append("file", pdfFile);
@@ -212,7 +212,7 @@ export default function ManageNews() {
         toast.success("PDF adjunto subido correctamente.");
       }
 
-      // subir la imagen si el admin seleccionó una
+      // edwind, lo mismito pero con la foto de portada
       if (imageFile && savedId) {
         const fd = new FormData();
         fd.append("file", imageFile);
@@ -233,7 +233,7 @@ export default function ManageNews() {
     }
   }
 
-  // elimina una noticia
+  // edwind, borramos la noticia si confirman que de verdad quieren hacerlo
   async function handleDelete(id, titulo) {
     if (
       !globalThis.confirm(
@@ -254,7 +254,7 @@ export default function ManageNews() {
 
   return (
     <div>
-      {/* Hidden inputs */}
+      {/* edwind, estos inputs están ocultos pero hacen el trabajo sucio de subir los archivos */}
       <input
         type="file"
         accept="application/pdf"
@@ -270,8 +270,8 @@ export default function ManageNews() {
         className="hidden"
       />
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      {/* edwind, la cabecera de nuestra pantalla de noticias */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900">
             Gestionar Noticias
@@ -283,14 +283,14 @@ export default function ManageNews() {
         <button
           id="create-news-btn"
           onClick={openCreateModal}
-          className="btn-primary text-sm"
+          className="btn-primary text-sm w-full sm:w-auto justify-center"
         >
           <Plus size={16} strokeWidth={2} />
           Crear Noticia
         </button>
       </div>
 
-      {/* Buscador */}
+      {/* edwind, la barrita para buscar noticias rápido */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-5">
         <div className="relative max-w-sm">
           <Search
@@ -310,7 +310,7 @@ export default function ManageNews() {
         </div>
       </div>
 
-      {/* Error del fetch */}
+      {/* edwind, un cuadrito rojo si nos falló la carga de noticias */}
       {error && (
         <div className="flex items-center gap-3 bg-red-50 border border-red-100 text-red-700 rounded-xl px-5 py-4 mb-5">
           <AlertCircle size={16} className="flex-shrink-0" />
@@ -318,7 +318,7 @@ export default function ManageNews() {
         </div>
       )}
 
-      {/* Tabla */}
+      {/* edwind, aquí dibujamos toooda la super tabla con las noticias */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -443,7 +443,7 @@ export default function ManageNews() {
           </table>
         </div>
 
-        {/* Pie de tabla */}
+        {/* edwind, un detallito abajo para saber cuántas noticias hay */}
         {!loading && (
           <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
             <p className="text-xs text-gray-400">
@@ -453,7 +453,7 @@ export default function ManageNews() {
         )}
       </div>
 
-      {/* Modal de crear / editar */}
+      {/* edwind, y este es el cuadro gigante que sale encima para crear o editar */}
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
@@ -462,7 +462,7 @@ export default function ManageNews() {
           }}
         >
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            {/* Cabecera del modal */}
+            {/* edwind, su barrita de título y botón para cerrar */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
               <h2 className="font-extrabold text-gray-900 text-lg">
                 {editingId ? "Editar Noticia" : "Nueva Noticia"}
@@ -475,57 +475,59 @@ export default function ManageNews() {
               </button>
             </div>
 
-            {/* Formulario */}
+            {/* edwind, todo el formulario empacado aquí dentro */}
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-              {/* Título */}
-              <div>
-                <label
-                  htmlFor="news-titulo"
-                  className="block text-xs font-semibold text-gray-600 mb-1.5"
-                >
-                  Título <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="news-titulo"
-                  name="titulo"
-                  value={formData.titulo}
-                  onChange={handleChange}
-                  required
-                  maxLength={200}
-                  placeholder="Ej: Inauguración del nuevo parque..."
-                  className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
-                             focus:outline-none focus:ring-2 focus:ring-marcona-blue/30 focus:border-marcona-blue transition"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* edwind, pedimos el título en este cajón */}
+                <div>
+                  <label
+                    htmlFor="news-titulo"
+                    className="block text-xs font-semibold text-gray-600 mb-1.5"
+                  >
+                    Título <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="news-titulo"
+                    name="titulo"
+                    value={formData.titulo}
+                    onChange={handleChange}
+                    required
+                    maxLength={200}
+                    placeholder="Ej: Inauguración..."
+                    className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
+                               focus:outline-none focus:ring-2 focus:ring-marcona-blue/30 focus:border-marcona-blue transition"
+                  />
+                </div>
+
+                {/* edwind, una listita para elegir de qué trata la noticia */}
+                <div>
+                  <label
+                    htmlFor="news-categoria"
+                    className="block text-xs font-semibold text-gray-600 mb-1.5"
+                  >
+                    Categoría <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="news-categoria"
+                    name="categoria"
+                    value={formData.categoria}
+                    onChange={handleChange}
+                    required
+                    className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
+                               focus:outline-none focus:ring-2 focus:ring-marcona-blue/30 focus:border-marcona-blue transition"
+                  >
+                    <option value="">Seleccionar categoría...</option>
+                    <option value="Obras">Obras</option>
+                    <option value="Salud">Salud</option>
+                    <option value="Comunicado">Comunicado</option>
+                    <option value="Normativa">Normativa</option>
+                    <option value="Cultura">Cultura</option>
+                    <option value="Educación">Educación</option>
+                  </select>
+                </div>
               </div>
 
-              {/* Categoría */}
-              <div>
-                <label
-                  htmlFor="news-categoria"
-                  className="block text-xs font-semibold text-gray-600 mb-1.5"
-                >
-                  Categoría <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="news-categoria"
-                  name="categoria"
-                  value={formData.categoria}
-                  onChange={handleChange}
-                  required
-                  className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm
-                             focus:outline-none focus:ring-2 focus:ring-marcona-blue/30 focus:border-marcona-blue transition"
-                >
-                  <option value="">Seleccionar categoría...</option>
-                  <option value="Obras">Obras</option>
-                  <option value="Salud">Salud</option>
-                  <option value="Comunicado">Comunicado</option>
-                  <option value="Normativa">Normativa</option>
-                  <option value="Cultura">Cultura</option>
-                  <option value="Educación">Educación</option>
-                </select>
-              </div>
-
-              {/* Imagen principal — upload desde dispositivo */}
+              {/* edwind, esta sección es para manejar la foto, se ve un poco larga pero es por los cambiazos de estado */}
               <div>
                 <p className="text-xs font-semibold text-gray-600 mb-1.5">
                   Imagen de Portada
@@ -534,7 +536,7 @@ export default function ManageNews() {
                   </span>
                 </p>
 
-                {/* Imagen ya guardada en el backend */}
+                {/* edwind, si ya tenía foto, la mostramos con un link */}
                 {existingImageUrl && !imageFile && (
                   <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 mb-2">
                     <Image size={15} className="text-green-600 shrink-0" />
@@ -553,7 +555,7 @@ export default function ManageNews() {
                   </div>
                 )}
 
-                {/* Archivo seleccionado pero aún no subido */}
+                {/* edwind, si recién eligió foto, le avisamos cuál es el nombre del archivo antes de subirlo */}
                 {imageFile ? (
                   <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5">
                     <Image size={16} className="text-marcona-blue shrink-0" />
@@ -584,7 +586,7 @@ export default function ManageNews() {
                 )}
               </div>
 
-              {/* PDF adjunto — upload desde dispositivo */}
+              {/* edwind, y esto es casi un copy-paste de lo de arriba pero para el archivo PDF */}
               <div>
                 <p className="text-xs font-semibold text-gray-600 mb-1.5">
                   PDF Adjunto
@@ -593,7 +595,7 @@ export default function ManageNews() {
                   </span>
                 </p>
 
-                {/* PDF ya guardado en el backend */}
+                {/* edwind, link al pdf si ya existe */}
                 {existingPdfUrl && !pdfFile && (
                   <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 mb-2">
                     <FileText size={15} className="text-green-600 shrink-0" />
@@ -612,7 +614,7 @@ export default function ManageNews() {
                   </div>
                 )}
 
-                {/* Archivo seleccionado pero aún no subido */}
+                {/* edwind, mostrando el pdf que acaban de escoger */}
                 {pdfFile ? (
                   <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5">
                     <FileText
@@ -646,7 +648,7 @@ export default function ManageNews() {
                 )}
               </div>
 
-              {/* Contenido */}
+              {/* edwind, el cajonsazo de texto donde se explayan escribiendo todo */}
               <div>
                 <label
                   htmlFor="news-contenido"
@@ -667,7 +669,7 @@ export default function ManageNews() {
                 />
               </div>
 
-              {/* Destacada */}
+              {/* edwind, un cuadrito para marcar si es importantísima la noticia */}
               <label className="flex items-center gap-2.5 cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -681,7 +683,7 @@ export default function ManageNews() {
                 </span>
               </label>
 
-              {/* Botones */}
+              {/* edwind, para cancelar el chiste o guardar todo en la base de datos */}
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"

@@ -14,7 +14,7 @@ export default function Home() {
         <Hero />
         <ServiceCards />
         <NewsSection />
-        {/* Sección: Información adicional / CTA */}
+        {/* edwind, aquí al final les decimos a dónde pueden llamar si tienen dudas */}
         <section className="py-14 bg-marcona-light">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-marcona-blue mb-4">

@@ -3,17 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
 import { getPublicMenu } from "../../services/menu.service";
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// edwind, algunas ayuditas para que funcione la navegación
 
 function isExternal(url) {
   return url && (url.startsWith("http://") || url.startsWith("https://"));
 }
 
-/**
- * Hook que añade un delay al cierre de menús hover.
- * openDelay: ms antes de abrir  (0 = inmediato)
- * closeDelay: ms antes de cerrar (150-200ms = cómodo para el mouse)
- */
+// edwind, este ganchito (hook) sirve para no cerrar de golpe el menú cuando se te resbala el ratón
+// le da un tiempito de vida al menú antes de desaparecer
 function useHoverMenu(closeDelay = 180) {
   const [open, setOpen] = useState(false);
   const timer = useRef(null);
@@ -35,13 +32,13 @@ function useHoverMenu(closeDelay = 180) {
     timer.current = setTimeout(() => setOpen(false), closeDelay);
   }, [closeDelay]);
 
-  // limpieza al desmontar
+  // edwind, limpiamos el temporizador si ya no estamos en este componente
   useEffect(() => () => clearTimer(), []);
 
   return { open, setOpen, enter, leave };
 }
 
-// ─── Link helper ─────────────────────────────────────────────────────────────
+// edwind, esto es un ayudante para saber si abrimos el link aquí mismo o en otra pestaña
 function NavLink({ item, children, onClick, className }) {
   if (isExternal(item.url)) {
     return (
@@ -65,18 +62,15 @@ function NavLink({ item, children, onClick, className }) {
 }
 
 // ─── Submenú recursivo para escritorio ──────────────────────────────────────
-/**
- * parentLeave / parentEnter: permiten que el panel hijo cancele
- * el cierre del panel padre cuando el mouse entra al hijo.
- */
+// edwind, con estas funciones evitamos que el menú principal se cierre si lograste llegar a un submenú
 function DesktopSubMenu({ items, depth = 0, parentEnter, parentLeave }) {
   const { pathname } = useLocation();
 
-  // Posición: nivel 0 cae abajo, niveles > 0 salen a la derecha
+  // edwind, si es el primer nivel, va pa' abajo, y si es submenú, lo asomamos por la derecha
   const positionClass = depth === 0 ? "top-full left-0" : "top-0 left-full";
 
   return (
-    // padding-top en nivel 0 para cubrir la brecha entre botón y panel
+    // edwind, echamos un espaciado para que el puntero no se "caiga" al pasar del botón al menú desplegable
     <div
       className={`absolute ${positionClass} ${depth === 0 ? "pt-2" : "pl-1"}`}
       style={{ zIndex: 50 + depth * 10 }}
@@ -129,7 +123,7 @@ function DesktopSubMenu({ items, depth = 0, parentEnter, parentLeave }) {
   );
 }
 
-// ─── Ítem raíz de escritorio ─────────────────────────────────────────────────
+// edwind, este es cada botoncito principal de la barra de arriba en la compu
 function DesktopMenuItem({ item }) {
   const { pathname } = useLocation();
   const hasChildren = item.children && item.children.length > 0;
@@ -173,7 +167,7 @@ function DesktopMenuItem({ item }) {
   );
 }
 
-// ─── Ítem móvil (recursivo) ──────────────────────────────────────────────────
+// edwind, acá armamos los ítems en versión celular
 function MobileMenuItem({ item, depth = 0, onClose }) {
   const { pathname } = useLocation();
   const [expanded, setExpanded] = useState(false);
@@ -236,7 +230,7 @@ function MobileMenuItem({ item, depth = 0, onClose }) {
   );
 }
 
-// ─── Navbar principal ────────────────────────────────────────────────────────
+// edwind, al fin, todo ensamblado en la barra de navegación grande
 export default function Navbar() {
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -257,7 +251,7 @@ export default function Navbar() {
       .catch((err) => console.error("Error fetching menu:", err));
   }, []);
 
-  // cerrar menú móvil al cambiar de ruta
+  // edwind, apagamos el menú del teléfono si la persona ya le picó a un enlace
   useEffect(() => {
     const id = setTimeout(() => setMobileOpen(false), 0);
     return () => clearTimeout(id);
@@ -267,14 +261,14 @@ export default function Navbar() {
     <nav className="bg-white border-b-2 border-marcona-gold shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-12">
-          {/* Desktop — ítems raíz */}
+          {/* edwind, aquí acomodamos los botones principales si estamos en pantalla grande */}
           <div className="hidden md:flex items-center gap-1">
             {menuItems.map((item) => (
               <DesktopMenuItem key={item.id} item={item} />
             ))}
           </div>
 
-          {/* Portal ciudadano */}
+          {/* edwind, un enlace directo y destacado al portal del vecino */}
           <div className="hidden md:block">
             <Link
               to="/login"
@@ -284,7 +278,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Hamburger móvil */}
+          {/* edwind, el botón de rayitas clásicas para abrir el menú en el celular */}
           <button
             className="md:hidden p-2 rounded-lg text-marcona-blue hover:bg-marcona-light transition-colors"
             onClick={() => setMobileOpen((v) => !v)}
@@ -299,7 +293,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Menú móvil — árbol recursivo */}
+        {/* edwind, todo el menú listado de arriba abajo para celulares */}
         {mobileOpen && (
           <div className="md:hidden pb-3 pt-1 border-t border-gray-100 max-h-[80vh] overflow-y-auto">
             {menuItems.map((item) => (

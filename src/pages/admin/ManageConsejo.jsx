@@ -18,7 +18,7 @@ import {
   uploadFotoMiembro,
 } from "../../services/consejo.service";
 
-// ===== Valores iniciales del formulario =====
+// edwind, estos son los valores por defecto para que el formulario no reviente
 const EMPTY_FORM = {
   nombre: "",
   cargo: "",
@@ -30,7 +30,7 @@ const EMPTY_FORM = {
   acercaDe: "",
 };
 
-// ===== Formulario de creación/edición =====
+// edwind, el componente del formulario, lo sacamos afuera para que no se nos haga tan largo el código
 function MiembroForm({ initial, onSave, onCancel, loading }) {
   const [form, setForm] = useState(initial ?? EMPTY_FORM);
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -44,7 +44,7 @@ function MiembroForm({ initial, onSave, onCancel, loading }) {
     });
   };
 
-  /** IDs de inputs para asociar labels */
+  // edwind, guardamos los ids aquí para conectar facilito los labels con los inputs
   const ids = {
     nombre: "miembro-nombre",
     cargo: "miembro-cargo",
@@ -242,7 +242,7 @@ MiembroForm.propTypes = {
 };
 MiembroForm.defaultProps = { initial: null };
 
-// ===== Página principal de gestión =====
+// edwind, y aquí la página principal que arma todo el rompecabezas
 export default function ManageConsejo() {
   const [miembros, setMiembros] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -358,7 +358,7 @@ export default function ManageConsejo() {
         onChange={handleFotoChange}
       />
 
-      {/* Header */}
+      {/* edwind, el titulo grandote de la pagina de consejo */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900">
@@ -370,14 +370,14 @@ export default function ManageConsejo() {
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 bg-marcona-blue text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-800 transition-colors"
+          className="flex items-center justify-center w-full sm:w-auto gap-2 bg-marcona-blue text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-800 transition-colors"
         >
           <Plus size={18} />
           Nuevo miembro
         </button>
       </div>
 
-      {/* Alerts */}
+      {/* edwind, los mensajitos de colores si todo salio bien o todo salio mal */}
       {successMsg && (
         <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 rounded-xl px-5 py-3">
           <CheckCircle size={18} />{" "}
@@ -390,7 +390,7 @@ export default function ManageConsejo() {
         </div>
       )}
 
-      {/* Content */}
+      {/* edwind, aqui va bailando el spinner y luego la informacion real */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
           <div
@@ -412,113 +412,115 @@ export default function ManageConsejo() {
 
       {!loading && miembros.length > 0 ? (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-xs font-bold uppercase tracking-wide">
-              <tr>
-                <th scope="col" className="px-5 py-3 text-left">
-                  Miembro
-                </th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 text-left hidden md:table-cell"
-                >
-                  Cargo
-                </th>
-                <th
-                  scope="col"
-                  className="px-5 py-3 text-center hidden sm:table-cell"
-                >
-                  Orden
-                </th>
-                <th scope="col" className="px-5 py-3 text-center">
-                  Foto
-                </th>
-                <th scope="col" className="px-5 py-3 text-center">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {miembros.map((m) => (
-                <tr key={m.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      {m.fotoUrl ? (
-                        <img
-                          src={m.fotoUrl}
-                          alt={m.nombre}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div
-                          className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-marcona-blue font-bold text-sm"
-                          aria-label={`Inicial de ${m.nombre}`}
-                        >
-                          {m.nombre.charAt(0)}
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-semibold text-gray-800">
-                          {m.nombre}
-                        </p>
-                        {m.esAlcalde && (
-                          <span className="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            Alcalde
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-gray-500 hidden md:table-cell">
-                    {m.cargo ?? "—"}
-                  </td>
-                  <td className="px-5 py-4 text-center text-gray-400 hidden sm:table-cell">
-                    {m.orden}
-                  </td>
-                  <td className="px-5 py-4 text-center">
-                    <button
-                      type="button"
-                      onClick={() => handleFotoClick(m.id)}
-                      disabled={uploadingFotoId === m.id}
-                      className="inline-flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:border-marcona-blue hover:text-marcona-blue transition-colors disabled:opacity-50"
-                      aria-label={`Subir foto de ${m.nombre}`}
-                    >
-                      {uploadingFotoId === m.id ? (
-                        <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Upload size={12} />
-                      )}
-                      Foto
-                    </button>
-                  </td>
-                  <td className="px-5 py-4 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => openEdit(m)}
-                        className="p-2 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-marcona-blue transition-colors"
-                        aria-label={`Editar ${m.nombre}`}
-                      >
-                        <Pencil size={15} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(m)}
-                        className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
-                        aria-label={`Eliminar ${m.nombre}`}
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-500 text-xs font-bold uppercase tracking-wide">
+                <tr>
+                  <th scope="col" className="px-5 py-3 text-left">
+                    Miembro
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-5 py-3 text-left hidden md:table-cell"
+                  >
+                    Cargo
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-5 py-3 text-center hidden sm:table-cell"
+                  >
+                    Orden
+                  </th>
+                  <th scope="col" className="px-5 py-3 text-center">
+                    Foto
+                  </th>
+                  <th scope="col" className="px-5 py-3 text-center">
+                    Acciones
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {miembros.map((m) => (
+                  <tr key={m.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        {m.fotoUrl ? (
+                          <img
+                            src={m.fotoUrl}
+                            alt={m.nombre}
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div
+                            className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-marcona-blue font-bold text-sm"
+                            aria-label={`Inicial de ${m.nombre}`}
+                          >
+                            {m.nombre.charAt(0)}
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-semibold text-gray-800">
+                            {m.nombre}
+                          </p>
+                          {m.esAlcalde && (
+                            <span className="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                              Alcalde
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 text-gray-500 hidden md:table-cell">
+                      {m.cargo ?? "—"}
+                    </td>
+                    <td className="px-5 py-4 text-center text-gray-400 hidden sm:table-cell">
+                      {m.orden}
+                    </td>
+                    <td className="px-5 py-4 text-center">
+                      <button
+                        type="button"
+                        onClick={() => handleFotoClick(m.id)}
+                        disabled={uploadingFotoId === m.id}
+                        className="inline-flex items-center gap-1 text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg hover:border-marcona-blue hover:text-marcona-blue transition-colors disabled:opacity-50"
+                        aria-label={`Subir foto de ${m.nombre}`}
+                      >
+                        {uploadingFotoId === m.id ? (
+                          <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Upload size={12} />
+                        )}
+                        Foto
+                      </button>
+                    </td>
+                    <td className="px-5 py-4 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openEdit(m)}
+                          className="p-2 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-marcona-blue transition-colors"
+                          aria-label={`Editar ${m.nombre}`}
+                        >
+                          <Pencil size={15} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(m)}
+                          className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
+                          aria-label={`Eliminar ${m.nombre}`}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : null}
 
-      {/* Modal Create/Edit */}
+      {/* edwind, la ventana que salta a la cara para editar o crear */}
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"

@@ -52,10 +52,10 @@ export default function Footer() {
     <footer className="bg-marcona-blue text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
-          {/* Columna 1: Institución */}
+          {/* edwind, primera columna: el logo y la info de la muni */}
           <div className="lg:col-span-4">
             <div className="flex items-center gap-3 mb-4">
-              {/* Logo SVG Oficial */}
+              {/* edwind, el logo oficial bien puestecito */}
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center p-1.5 flex-shrink-0 shadow-md">
                 <img
                   src="/marconalogo.svg"
@@ -77,7 +77,7 @@ export default function Footer() {
               ciudadanos del Distrito de Marcona, Ica, Perú.
             </p>
 
-            {/* Redes sociales */}
+            {/* edwind, los links para que nos sigan en facebook, instagram y demás */}
             <div className="flex items-center gap-3 mt-5">
               {/* eslint-disable-next-line no-unused-vars */}
               {SOCIALS.map(({ icon: Icon, href, label }) => (
@@ -92,8 +92,8 @@ export default function Footer() {
                 </a>
               ))}
             </div>
-            
-            {/* Escudo Nacional del Perú (SVG simplificado) */}
+
+            {/* edwind, el escudito del Perú para darle más peso institucional */}
             <div className="mt-6 flex items-center gap-3">
               <div className="w-12 h-14 flex items-start justify-center">
                 <img
@@ -110,7 +110,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Columna 2: Links rápidos */}
+          {/* edwind, segunda columna: enlaces directos a las partes más visitadas */}
           <div className="lg:col-span-2">
             <h4 className="font-bold text-sm uppercase tracking-widest text-marcona-gold mb-4">
               Acceso Rápido
@@ -130,7 +130,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Columna 3: Servicios */}
+          {/* edwind, tercera columna: enlaces a trámites y pagos */}
           <div className="lg:col-span-2">
             <h4 className="font-bold text-sm uppercase tracking-widest text-marcona-gold mb-4">
               Servicios
@@ -150,7 +150,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Columna 4: Contacto + Ubicación */}
+          {/* edwind, cuarta y última columna: dónde estamos y cómo llamarnos */}
           <div className="lg:col-span-4 flex flex-col h-full">
             <h4 className="font-bold text-sm uppercase tracking-widest text-marcona-gold mb-4">
               Contacto y Ubicación
@@ -187,7 +187,7 @@ export default function Footer() {
               </li>
             </ul>
 
-            {/* Mapa de Ubicación */}
+            {/* edwind, el mapita de google para que nadie se pierda llegando a la muni */}
             <div className="mt-6 flex-1 w-full min-h-[160px] max-h-[220px] rounded-xl overflow-hidden shadow-lg border border-white/10 relative">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3296.2298453027142!2d-75.165949!3d-15.361786!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x911663500994717b%3A0x3cd40636590ced0e!2sMunicipalidad%20Distrital%20de%20Marcona!5e1!3m2!1ses-419!2spe!4v1773597368764!5m2!1ses-419!2spe"
@@ -202,14 +202,14 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* edwind, la barrita negra final del todo con los derechos reservados y esas cosas legales */}
       <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-white/40 text-xs text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-white/40 text-xs text-center md:text-left">
             © 2026 Municipalidad Distrital de Marcona. Todos los derechos
             reservados.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-4">
             <a
               href="#"
               className="text-white/40 hover:text-white text-xs transition-colors"

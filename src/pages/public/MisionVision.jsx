@@ -56,9 +56,9 @@ export default function MisionVision() {
       <TopBar />
       <Navbar />
 
-      {/* ====== HERO BANNER ====== */}
+      {/* edwind, la cabecera principal de misión y visión */}
       <div className="bg-marcona-blue text-white relative overflow-hidden">
-        {/* decorative circles */}
+        {/* edwind, unos circulitos de adorno para que no se vea tan vacío el fondo */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-marcona-yellow/10 rounded-full translate-y-1/2 -translate-x-1/4" />
 
@@ -79,11 +79,11 @@ export default function MisionVision() {
       </div>
 
       <main className="flex-1">
-        {/* ====== SECCIÓN MISIÓN ====== */}
+        {/* edwind, aquí empieza la parte que habla de la misión */}
         <section className="py-16 md:py-24">
           <div className="max-w-6xl mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Texto */}
+              {/* edwind, todo el texto explicativo de la misión va en este lado */}
               <div className="order-2 md:order-1">
                 <div className="inline-flex items-center gap-2 bg-blue-50 text-marcona-blue text-sm font-semibold px-4 py-2 rounded-full mb-6">
                   <span className="text-lg">Nuestra Misión</span>
@@ -119,8 +119,8 @@ export default function MisionVision() {
                   democracia, paz y solidaridad.
                 </p>
 
-                {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 mt-10">
+                {/* edwind, unos numeritos para sacar pecho de lo que hace la muni */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10">
                   {[
                     { value: "+15", label: "Años de servicio" },
                     { value: "24/7", label: "Atención de emergencias" },
@@ -141,10 +141,10 @@ export default function MisionVision() {
                 </div>
               </div>
 
-              {/* Imagen con forma orgánica */}
+              {/* edwind, la foto con formita de mancha de agua, para que no sea un cuadrado aburrido */}
               <div className="order-1 md:order-2 flex items-center justify-center">
                 <div className="relative w-full max-w-md">
-                  {/* Decorative blob behind image */}
+                  {/* edwind, una sombra de color detrás de la foto para darle volumen */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-blue-200 to-blue-400 rounded-[60%_40%_30%_70%/60%_30%_70%_40%] opacity-30 blur-2xl scale-110" />
                   <img
                     src={misionImg}
@@ -160,14 +160,14 @@ export default function MisionVision() {
           </div>
         </section>
 
-        {/* Separador decorativo */}
+        {/* edwind, una rayita delgada para separar misión de visión */}
         <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
-        {/* ====== SECCIÓN VISIÓN ====== */}
+        {/* edwind, y acá arranca la parte de cómo nos vemos en el futuro (la visión) */}
         <section className="py-16 md:py-24 bg-gray-50">
           <div className="max-w-6xl mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Imagen con forma orgánica */}
+              {/* edwind, otra foto con forma loquita para hacer juego */}
               <div className="flex items-center justify-center">
                 <div className="relative w-full max-w-md">
                   <div className="absolute inset-0 bg-gradient-to-tr from-amber-200 to-yellow-400 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] opacity-20 blur-2xl scale-110" />
@@ -182,7 +182,7 @@ export default function MisionVision() {
                 </div>
               </div>
 
-              {/* Texto */}
+              {/* edwind, el texto que soñamos alcanzar */}
               <div>
                 <div className="inline-flex items-center gap-2 bg-amber-50 text-amber-700 text-sm font-semibold px-4 py-2 rounded-full mb-6">
                   <span className="text-lg">Nuestra Visión</span>
@@ -206,7 +206,7 @@ export default function MisionVision() {
                   Perú.
                 </p>
 
-                {/* Timeline de metas */}
+                {/* edwind, una línea de tiempo chiquita para ver qué haremos año por año */}
                 <div className="mt-10 space-y-3">
                   {[
                     {
@@ -222,7 +222,10 @@ export default function MisionVision() {
                       goal: "Marcona como distrito modelo del sur del Perú",
                     },
                   ].map(({ year, goal }) => (
-                    <div key={year} className="flex items-center gap-4">
+                    <div
+                      key={year}
+                      className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4"
+                    >
                       <span className="shrink-0 w-14 text-center font-extrabold text-amber-600 text-sm bg-amber-100 py-1 px-2 rounded-lg">
                         {year}
                       </span>
@@ -235,7 +238,7 @@ export default function MisionVision() {
           </div>
         </section>
 
-        {/* ====== VALORES INSTITUCIONALES ====== */}
+        {/* edwind, para terminar, los valores de la municipalidad, uno por uno en cajitas */}
         <section className="py-16 md:py-24 bg-white">
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-14">

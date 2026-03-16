@@ -6,7 +6,7 @@ import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
 import { getConsejoMiembros } from "../../services/consejo.service";
 
-// ===== PropTypes shape compartido =====
+// edwind, este es el molde que compartimos para validar los props del miembro
 const miembroPropType = PropTypes.shape({
   id: PropTypes.number,
   nombre: PropTypes.string,
@@ -20,7 +20,7 @@ const miembroPropType = PropTypes.shape({
   acercaDe: PropTypes.string,
 });
 
-// ===== Avatar con iniciales de respaldo =====
+// edwind, este componente es para mostrar las iniciales si el miembro no tiene foto
 function AvatarPlaceholder({ name, size }) {
   const initials = name
     ? name
@@ -48,7 +48,7 @@ AvatarPlaceholder.propTypes = {
 };
 AvatarPlaceholder.defaultProps = { size: "normal" };
 
-// ===== Tarjeta de miembro =====
+// edwind, aquí armamos la tarjetita que muestra a cada miembro en la cuadrícula
 function MiembroCard({ miembro, onClick }) {
   const isAlcalde = miembro.esAlcalde;
 
@@ -69,7 +69,7 @@ function MiembroCard({ miembro, onClick }) {
       }`}
       aria-label={`Ver perfil de ${miembro.nombre}`}
     >
-      {/* foto o avatar */}
+      {/* edwind, mostramos la foto o el circulito con sus iniciales */}
       <div className="relative mb-4">
         {miembro.fotoUrl ? (
           <img
@@ -90,16 +90,18 @@ function MiembroCard({ miembro, onClick }) {
         )}
       </div>
 
-      {/* info */}
-      <div className="mt-2">
+      {/* edwind, aquí va la info del cargo y nombre */}
+      <div className="mt-3 w-full px-2">
         <h3
-          className={`font-bold text-gray-800 leading-tight ${isAlcalde ? "text-lg" : "text-sm"}`}
+          title={miembro.nombre}
+          className={`font-bold text-gray-800 leading-tight line-clamp-2 break-words ${isAlcalde ? "text-lg" : "text-sm"}`}
         >
           {miembro.nombre}
         </h3>
         {miembro.cargo && (
           <p
-            className={`text-gray-500 mt-1 ${isAlcalde ? "text-sm" : "text-xs"}`}
+            title={miembro.cargo}
+            className={`text-gray-500 mt-1.5 line-clamp-3 break-words ${isAlcalde ? "text-sm" : "text-xs"}`}
           >
             {miembro.cargo}
           </p>
@@ -118,7 +120,7 @@ MiembroCard.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-// ===== Modal de detalle =====
+// edwind, y este es el cuadro grande que sale cuando le das click a un miembro
 function MiembroModal({ miembro, onClose }) {
   if (!miembro) return null;
 
@@ -140,13 +142,13 @@ function MiembroModal({ miembro, onClose }) {
       tabIndex={-1}
     >
       <div
-        className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden"
+        className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
         role="presentation"
       >
-        {/* Header con foto */}
-        <div className="bg-gradient-to-br from-marcona-blue to-blue-800 text-white px-8 py-10 flex flex-col items-center relative">
+        {/* edwind, la cabecera del cuadro con su foto en grande */}
+        <div className="bg-gradient-to-br from-marcona-blue to-blue-800 text-white px-8 py-8 flex flex-col items-center relative shrink-0">
           {miembro.fotoUrl ? (
             <img
               src={miembro.fotoUrl}
@@ -180,9 +182,9 @@ function MiembroModal({ miembro, onClose }) {
           </button>
         </div>
 
-        {/* Body con datos */}
-        <div className="p-8 space-y-5">
-          {/* datos rápidos */}
+        {/* edwind, y en el cuerpo ponemos el resto de su información */}
+        <div className="p-6 sm:p-8 space-y-5 overflow-y-auto">
+          {/* edwind, datos al grano como edad y nacionalidad */}
           {hasQuickData && (
             <div className="grid grid-cols-2 gap-3">
               {miembro.nacionalidad && (
@@ -212,7 +214,7 @@ function MiembroModal({ miembro, onClose }) {
             </div>
           )}
 
-          {/* Estudios */}
+          {/* edwind, aquí ponemos dónde estudió */}
           {miembro.estudios && (
             <div className="flex gap-3">
               <div className="shrink-0 w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center">
@@ -229,7 +231,7 @@ function MiembroModal({ miembro, onClose }) {
             </div>
           )}
 
-          {/* Acerca de */}
+          {/* edwind, y un poquito más de información sobre él o ella */}
           {miembro.acercaDe && (
             <div className="flex gap-3">
               <div className="shrink-0 w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center">
@@ -263,7 +265,7 @@ MiembroModal.propTypes = {
 };
 MiembroModal.defaultProps = { miembro: null };
 
-// ===== Página principal =====
+// edwind, por fin la página principal que junta todo lo del consejo
 export default function ConsejoMunicipal() {
   const [miembros, setMiembros] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -288,13 +290,13 @@ export default function ConsejoMunicipal() {
       <TopBar />
       <Navbar />
 
-      {/* Header */}
-      <div className="bg-marcona-blue text-white py-12 px-4 shadow-md">
+      {/* edwind, el título grandote de la página */}
+      <div className="bg-marcona-blue text-white py-12 px-4 shadow-md text-center sm:text-left">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-extrabold">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold">
             Consejo Municipal
           </h1>
-          <p className="text-blue-200 mt-3 text-lg">
+          <p className="text-blue-200 mt-3 text-base sm:text-lg">
             Autoridades elegidas para el período 2023–2026 de la Municipalidad
             Distrital de Marcona.
           </p>
@@ -326,7 +328,7 @@ export default function ConsejoMunicipal() {
           </div>
         )}
 
-        {/* Alcalde */}
+        {/* edwind, el alcalde va primero y más grandecito */}
         {alcalde && (
           <div className="mb-14">
             <h2 className="text-xs font-bold uppercase tracking-widest text-marcona-blue mb-6 text-center">
@@ -340,7 +342,7 @@ export default function ConsejoMunicipal() {
           </div>
         )}
 
-        {/* Regidores */}
+        {/* edwind, y abajo todos los regidores */}
         {regidores.length > 0 && (
           <div>
             <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8 text-center">
@@ -357,7 +359,7 @@ export default function ConsejoMunicipal() {
 
       <Footer />
 
-      {/* Modal de detalle */}
+      {/* edwind, aquí llamamos al cuadro de detalle si seleccionaron a alguien */}
       {selected && (
         <MiembroModal miembro={selected} onClose={() => setSelected(null)} />
       )}

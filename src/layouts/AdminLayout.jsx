@@ -11,41 +11,58 @@ import {
   List,
   Users,
   Network,
+  UserCog,
 } from "lucide-react";
 import { useState } from "react";
 
 const NAV_ITEMS = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
+  {
+    to: "/admin",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    end: true,
+    adminOnly: false,
+  },
   {
     to: "/admin/noticias",
     label: "Gestionar Noticias",
     icon: Newspaper,
     end: false,
+    adminOnly: false,
   },
   {
     to: "/admin/documentos",
     label: "Gestionar Documentos",
     icon: FileText,
     end: false,
+    adminOnly: true,
   },
-  { to: "/admin/menu", label: "Gestión de Menú", icon: List, end: false },
+  {
+    to: "/admin/menu",
+    label: "Gestión de Menú",
+    icon: List,
+    end: false,
+    adminOnly: true,
+  },
   {
     to: "/admin/organigrama",
     label: "Organigrama",
     icon: Network,
     end: false,
+    adminOnly: true,
   },
   {
     to: "/admin/consejo",
     label: "Consejo Municipal",
     icon: Users,
     end: false,
+    adminOnly: true,
   },
 ];
 
 const SidebarContent = ({ user, handleLogout, setSidebarOpen }) => (
   <div className="flex flex-col h-full">
-    {/* Logo */}
+    {/* edwind, el loguito de la municipalidad en la esquina del menú */}
     <div className="px-5 py-6 border-b border-white/10">
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 bg-marcona-blue rounded-xl flex items-center justify-center shadow">
@@ -60,7 +77,7 @@ const SidebarContent = ({ user, handleLogout, setSidebarOpen }) => (
       </div>
     </div>
 
-    {/* User Badge */}
+    {/* edwind, la tarjetita que muestra quién está conectado ahora mismo */}
     <div className="px-5 py-4 border-b border-white/10">
       <div className="bg-white/5 rounded-xl p-3">
         <p className="text-white/40 text-[10px] uppercase tracking-widest mb-0.5">
@@ -75,35 +92,62 @@ const SidebarContent = ({ user, handleLogout, setSidebarOpen }) => (
       </div>
     </div>
 
-    {/* Nav */}
+    {/* edwind, y acá la lista de opciones para navegar por el panel */}
     <nav className="flex-1 px-3 py-4 space-y-1">
       {/* eslint-disable-next-line no-unused-vars */}
-      {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+      {NAV_ITEMS.map(({ to, label, icon: Icon, end, adminOnly }) => {
+        if (adminOnly && !user?.roles?.includes("ROLE_ADMIN")) return null;
+
+        return (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            onClick={() => setSidebarOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
+                isActive
+                  ? "bg-marcona-blue text-white shadow-lg"
+                  : "text-white/60 hover:text-white hover:bg-white/10"
+              }`
+            }
+          >
+            <Icon size={18} strokeWidth={1.5} />
+            <span className="flex-1">{label}</span>
+            <ChevronRight
+              size={14}
+              strokeWidth={1.5}
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+            />
+          </NavLink>
+        );
+      })}
+
+      {/* edwind, ojo aquí, los usuarios normales no pueden ver el botón para crear otros usuarios */}
+      {user?.roles?.includes("ROLE_ADMIN") && (
         <NavLink
-          key={to}
-          to={to}
-          end={end}
+          to="/admin/usuarios"
           onClick={() => setSidebarOpen(false)}
           className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
+            `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group mt-4 border border-white/10 ${
               isActive
-                ? "bg-marcona-blue text-white shadow-lg"
-                : "text-white/60 hover:text-white hover:bg-white/10"
+                ? "bg-marcona-gold text-blue-900 shadow-lg border-transparent"
+                : "text-marcona-gold hover:bg-white/10"
             }`
           }
         >
-          <Icon size={18} strokeWidth={1.5} />
-          <span className="flex-1">{label}</span>
+          <UserCog size={18} strokeWidth={1.5} />
+          <span className="flex-1">Gestión de Usuarios</span>
           <ChevronRight
             size={14}
             strokeWidth={1.5}
             className="opacity-0 group-hover:opacity-100 transition-opacity"
           />
         </NavLink>
-      ))}
+      )}
     </nav>
 
-    {/* Logout */}
+    {/* edwind, el botón rojito para salir del sistema y cerrar la puerta */}
     <div className="px-3 py-4 border-t border-white/10">
       <button
         id="admin-logout"
@@ -130,7 +174,7 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen flex bg-gray-50">
-      {/* Sidebar Desktop */}
+      {/* edwind, la barra lateral izquierda que se ve en pantallas grandes */}
       <aside className="hidden lg:flex flex-col w-60 bg-[#1E293B] fixed inset-y-0 left-0 z-30">
         <SidebarContent
           user={user}
@@ -139,7 +183,7 @@ export default function AdminLayout() {
         />
       </aside>
 
-      {/* Sidebar Mobile Overlay */}
+      {/* edwind, la misma barra pero versión celular, que se esconde y aparece */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
@@ -156,9 +200,9 @@ export default function AdminLayout() {
         </div>
       )}
 
-      {/* Main content */}
+      {/* edwind, y en este lado derecho metemos el contenido principal de la pantalla */}
       <div className="flex-1 lg:ml-60 flex flex-col">
-        {/* Top bar */}
+        {/* edwind, la barrita de arriba chiquita con el botón de menú para celulares */}
         <header className="bg-white border-b border-gray-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-20 shadow-sm">
           <button
             className="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
@@ -180,7 +224,7 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        {/* Page content */}
+        {/* edwind, aquí inyectamos las pantallas hijas (noticias, usuarios, etc) */}
         <main className="flex-1 p-6">
           <Outlet />
         </main>

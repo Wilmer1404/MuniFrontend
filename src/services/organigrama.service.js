@@ -1,12 +1,12 @@
 import api from './api';
 
-// obtener la URL del PDF del organigrama actual
+// edwind, esto nos trae la url del pdf del organigrama que está publicado
 export const getOrganigramaUrl = async () => {
   const { data } = await api.get('/organigrama');
   return data;
 };
 
-// subir o reemplazar el PDF del organigrama (solo admin)
+// edwind, y con este los admin pueden subir un nuevo organigrama o reemplazar el de ahorita
 export const uploadOrganigrama = async (file) => {
   const formData = new FormData();
   formData.append('file', file);

@@ -98,7 +98,7 @@ export default function NoticiaDetalle() {
               </div>
             )}
 
-            <div className="p-6 sm:p-10 md:p-12">
+            <div className="p-5 sm:p-8 md:p-12">
               <div className="flex flex-wrap items-center gap-4 mb-6">
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
@@ -124,7 +124,7 @@ export default function NoticiaDetalle() {
                 {noticia.titulo}
               </h1>
 
-              <div className="prose prose-blue max-w-none text-gray-600 text-[15px] sm:text-base leading-relaxed whitespace-pre-wrap">
+              <div className="prose prose-blue max-w-none text-gray-600 text-[15px] sm:text-base leading-relaxed whitespace-pre-wrap break-words">
                 {noticia.contenido}
               </div>
 
@@ -138,11 +138,11 @@ export default function NoticiaDetalle() {
                     href={noticia.urlPdf}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 bg-white border border-gray-200 hover:border-marcona-blue hover:text-marcona-blue text-gray-700
-                               px-6 py-3 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 sm:gap-3 bg-white border border-gray-200 hover:border-marcona-blue hover:text-marcona-blue text-gray-700
+                               px-4 sm:px-6 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-colors shadow-sm text-center w-full sm:w-auto"
                   >
-                    <FileText size={16} />
-                    Consultar Documento PDF
+                    <FileText size={16} className="shrink-0" />
+                    <span className="truncate">Consultar Documento PDF</span>
                   </a>
                 </div>
               )}
