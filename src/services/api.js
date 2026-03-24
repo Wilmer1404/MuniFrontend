@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // edwind, esta es nuestra instancia central de axios que apunta al backend
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'https://api-v2.munimarcona.gob.pe/api',
   headers: {
     'Content-Type': 'application/json',
   },

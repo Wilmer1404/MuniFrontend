@@ -258,7 +258,7 @@ export default function Navbar() {
   }, [pathname]);
 
   return (
-    <nav className="bg-white border-b-2 border-marcona-gold shadow-sm sticky top-0 z-50">
+    <nav className="bg-white border-b-2 border-marcona-gold shadow-sm sticky top-0 z-[60]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-12">
           {/* edwind, aquí acomodamos los botones principales si estamos en pantalla grande */}

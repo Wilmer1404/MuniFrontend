@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import ScrollToTop from "./components/ScrollToTop";
 
 // edwind, aquí cargamos las páginas que cualquier vecino puede ver
 import Home from "./pages/public/Home";
@@ -28,6 +29,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           {/* edwind, las rutas libres para todo el mundo */}
           <Route path="/" element={<Home />} />

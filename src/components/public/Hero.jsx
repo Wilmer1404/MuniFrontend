@@ -154,7 +154,7 @@ export default function Hero() {
 
       {/* edwind, todo el texto principal bien centradito en la pantalla */}
       <div
-        className="relative z-50 text-center px-4 max-w-3xl mx-auto w-full mt-10"
+        className="relative z-40 text-center px-4 sm:px-6 max-w-3xl mx-auto w-full pt-12 pb-20 sm:pb-24"
         ref={dropdownRef}
       >
         <p className="text-marcona-gold font-semibold text-sm uppercase tracking-widest mb-3 opacity-90">
@@ -172,7 +172,7 @@ export default function Hero() {
         </p>
 
         {/* edwind, la barra de búsqueda donde empieza la magia */}
-        <div className="relative w-full max-w-xl mx-auto z-50">
+        <div className="relative w-full max-w-xl mx-auto z-40 px-2 sm:px-0">
           <form
             onSubmit={handleSearchSubmit}
             className={`flex items-center bg-white shadow-2xl overflow-hidden transition-all duration-300 relative z-50 ${
@@ -214,9 +214,9 @@ export default function Hero() {
 
             <button
               type="submit"
-              className="bg-marcona-blue hover:bg-blue-800 text-white px-5 py-3.5 transition-colors flex items-center gap-2 font-semibold text-sm shrink-0"
+              className="bg-marcona-blue hover:bg-blue-800 text-white px-4 sm:px-5 py-3.5 transition-colors flex items-center gap-2 font-semibold text-sm shrink-0 rounded-r-full"
             >
-              <Search size={18} strokeWidth={1.5} className="sm:hidden" />
+              <Search size={18} strokeWidth={1.5} />
               <span className="hidden sm:inline">Buscar</span>
             </button>
           </form>
