@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   useMemo,
+  useEffect,
 } from "react";
 import PropTypes from "prop-types";
 import { Toaster } from "react-hot-toast";
@@ -14,21 +15,25 @@ import api from "../services/api";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // edwind, aquí cargamos al usuario desde el localStorage por si ya había iniciado sesión antes
-  const [user, setUser] = useState(() => {
-    try {
-      const stored = localStorage.getItem("user");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  const [token, setToken] = useState(
-    () => localStorage.getItem("token") || null,
-  );
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // empezamos cargando para verificar la sesión
   const [error, setError] = useState(null);
+
+  // edwind, al iniciar la app, le preguntamos al backend "oye, ¿sigo teniendo sesión?"
+  // el backend leerá la cookie solita
+  useEffect(() => {
+    const verifySession = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        setUser(res.data);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    verifySession();
+  }, []);
 
   // edwind, con esta función hacemos login en el backend y guardamos el token jwt
   const login = useCallback(async (username, password) => {
@@ -36,11 +41,8 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const response = await api.post("/auth/signin", { username, password });
-      const { token: jwt, ...userData } = response.data;
+      const userData = response.data; // la cookie HttpOnly ya viene pegada en esta respuesta
 
-      localStorage.setItem("token", jwt);
-      localStorage.setItem("user", JSON.stringify(userData));
-      setToken(jwt);
       setUser(userData);
       return { success: true, user: userData };
     } catch (err) {
@@ -61,15 +63,17 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // edwind, esta es para cerrar sesión, limpiamos todo para que no quede rastro
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setToken(null);
+  const logout = useCallback(async () => {
+    try {
+      await api.post("/auth/logout"); // le pedimos al backend que destruya la cookie
+    } catch (error) {
+      console.error("Error al desloguearse", error);
+    }
     setUser(null);
+    window.location.href = "/login";
   }, []);
 
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!user;
 
   // edwind, aquí comprobamos si el usuario tiene un rol en específico, como admin por ejemplo
   const hasRole = useCallback((role) => user?.roles?.includes(role), [user]);
@@ -78,7 +82,7 @@ export function AuthProvider({ children }) {
   const contextValue = useMemo(
     () => ({
       user,
-      token,
+      token: "httpOnly_cookie", // ya no exponemos token
       loading,
       error,
       login,
@@ -86,7 +90,7 @@ export function AuthProvider({ children }) {
       isAuthenticated,
       hasRole,
     }),
-    [user, token, loading, error, login, logout, isAuthenticated, hasRole],
+    [user, loading, error, login, logout, isAuthenticated, hasRole],
   );
 
   return (

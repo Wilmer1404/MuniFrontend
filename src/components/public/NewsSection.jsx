@@ -177,9 +177,10 @@ export default function NewsSection() {
                     <h3 className="font-bold text-gray-800 text-sm mt-1 mb-2 leading-snug group-hover:text-marcona-blue transition-colors">
                       {item.titulo}
                     </h3>
-                    <p className="text-gray-500 text-xs leading-relaxed line-clamp-3">
-                      {item.contenido}
-                    </p>
+                    <div
+                      className="text-gray-500 text-xs leading-relaxed line-clamp-3 prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: item.contenido }}
+                    />
                     <Link
                       to={`/noticias/${item.id}`}
                       className="inline-flex items-center gap-1 text-marcona-blue font-semibold text-xs mt-4 hover:text-blue-800 transition-colors"

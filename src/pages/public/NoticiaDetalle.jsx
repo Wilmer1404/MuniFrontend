@@ -124,9 +124,10 @@ export default function NoticiaDetalle() {
                 {noticia.titulo}
               </h1>
 
-              <div className="prose prose-blue max-w-none text-gray-600 text-[15px] sm:text-base leading-relaxed whitespace-pre-wrap break-words">
-                {noticia.contenido}
-              </div>
+              <div
+                className="prose prose-blue max-w-none text-gray-600 text-[15px] sm:text-base leading-relaxed break-words"
+                dangerouslySetInnerHTML={{ __html: noticia.contenido }}
+              />
 
               {noticia.urlPdf && (
                 <div className="mt-12 pt-8 border-t border-gray-100">

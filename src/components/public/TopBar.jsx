@@ -38,7 +38,7 @@ export default function TopBar() {
                 Marcona
               </h1>
               <p className="hidden sm:block text-[10px] text-marcona-gold font-medium italic">
-                Trabajando por tu Bienestar
+                Avancemos Juntos
               </p>
             </div>
           </Link>
